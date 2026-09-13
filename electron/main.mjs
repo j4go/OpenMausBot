@@ -92,6 +92,10 @@ const DEV_URL = process.env.ELECTRON_START_URL ?? "http://127.0.0.1:5199";
 const DEFAULT_COMPOSIO_BROKER_URL = "https://openmausbot-composio.milindsoni201.workers.dev";
 let SERVER_PORT = 8799;
 const APP_ICON = path.join(__dirname, "resources/app-icon.png");
+// Windows taskbar icon: use multi-size ICO (single PNG often renders as a white icon on the Windows taskbar)
+const WINDOW_ICON = process.platform === "win32"
+  ? path.join(__dirname, "resources/app-icon.ico")
+  : APP_ICON;
 let desktopViewerWindow = null;
 let desktopViewerOwner = null;
 let desktopViewerContextId = null;
@@ -1205,7 +1209,7 @@ function openDesktopViewer(owner, rawUrl, rawTitle, contextId) {
     modal: false,
     show: false,
     title,
-    icon: APP_ICON,
+    icon: WINDOW_ICON,
     backgroundColor: "#070707",
     autoHideMenuBar: true,
     webPreferences: {
@@ -1535,7 +1539,7 @@ function createWindow() {
     // recolors the native caption-button overlay, otherwise a saved light
     // skin still flashes the Midnight-black block on every cold start.
     show: !waitsForSkinSync,
-    icon: APP_ICON,
+    icon: WINDOW_ICON,
     backgroundColor: "#070707",
     autoHideMenuBar: process.platform !== "darwin",
     ...windowChromeOptions(process.platform),
