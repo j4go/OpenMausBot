@@ -40,3 +40,7 @@ deploy/podman/.env
 deploy/podman/.env.*
 !deploy/podman/.env.example
 /.env
+
+# 本地开发工具与数据（不进版本库）
+.tools/
+.omb-dev-data/
