@@ -3,7 +3,7 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
-  chmodSync, copyFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync,
+  chmodSync, copyFileSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync,
   readFileSync, readdirSync, readlinkSync, realpathSync, renameSync, rmSync,
   writeFileSync,
 } from "node:fs";
@@ -167,14 +167,11 @@ export async function stageBrowserTarget(root, target, { cacheDirectory = proces
     for (const name of BROWSER_LICENSE_FILES) copyFileSync(join(sourceRoot, "third_party", "browser", name), join(paths.licenses, name));
     writeFileSync(paths.manifest, `${JSON.stringify({ ...spec, files: bundleInventory(stage) }, null, 2)}\n`);
     verifyBrowserBundle(stage, target);
-    // Keep the previous complete tree until the new one passes every check.
-    const previous = join(scratch, "previous");
-    if (existsSync(destination)) renameSync(destination, previous);
-    try { renameSync(stage, destination); }
-    catch (error) {
-      if (existsSync(previous)) renameSync(previous, destination);
-      throw error;
-    }
+    // Windows Defender real-time scanning locks the freshly extracted directory
+    // handle, so renaming the directory fails with EPERM (files stay readable and
+    // per-file copy is unaffected, verified). Remove old tree and copy instead.
+    if (existsSync(destination)) rmSync(destination, { recursive: true, force: true });
+    cpSync(stage, destination, { recursive: true });
     console.log(`Browser ready: agent-browser ${spec.engine.version} + Chromium headless ${spec.chrome.version} (${target})`);
     return destination;
   } finally {
