@@ -94,9 +94,85 @@ $env:OMB_PORT = 8801                                  # 独立端口
 | pnpm 提示 `Ignored build scripts: core-js, workerd` | pnpm 默认拦截依赖 postinstall | 目前无影响；跑 Cloudflare broker 报 workerd 缺失时执行 `pnpm approve-builds` |
 | `Unsupported engine: wanted node >=24` | 没通过 dev.ps1 进入环境 | 用 `.\dev.ps1` 或手动 `$env:PATH = "D:\OpenMausBot\.tools\node24;$env:PATH"` |
 
-## Git 约定
+## Git 工作流：合并官方更新 & 给官方提 PR
 
-- 本仓库 `origin` = 你的 fork（`j4go/OpenMausBot`），`upstream` = 官方
-- 开发请开分支：`git checkout -b my-feature`
-- 官方更新：`git fetch upstream && git merge upstream/main && git push origin main`
-- `.tools/`、`.omb-dev-data/` 已加入 `.gitignore`，不会进版本库
+仓库结构：`origin` = 你的 fork（`j4go/OpenMausBot`），`upstream` = 官方（`milind-soni/OpenMausBot`）。
+当前 fork main 在官方基线 `536b7893` 之上有 3 个本地 commit：
+
+| Commit | 内容 | 归属 |
+|---|---|---|
+| `72363b70` | fix(electron)：窗口图标 ICO | 可提 PR |
+| `d560455d` | fix(scripts)：prepare-browser Defender 修复 | 可提 PR |
+| `db1fe57a` | chore：DEV-NOTES.md / dev.ps1 / .gitignore | **个人工具，勿进 PR** |
+
+---
+
+### 一、合并官方更新（日常维护，推荐 merge）
+
+```powershell
+cd D:\OpenMausBot
+
+# 1. 拉取官方最新到本地（不会自动改工作区）
+git fetch upstream
+
+# 2. 合并到本地 main（保留分叉历史，简单安全）
+git checkout main
+git merge upstream/main
+
+# 3. 若提示冲突（本地改动与官方改到同一处）
+git status                # 查看冲突文件
+# 手动编辑解决后：
+git add <冲突文件> && git commit
+# 或放弃本次合并：git merge --abort
+
+# 4. 推送到自己的 fork
+git push origin main
+```
+
+要点：
+- 用 **merge** 而不是 rebase：rebase 会改写历史，冲突更难解，且别对已推送的分支做。
+- 合并后本地 3 个自定义 commit 会保留在历史上，之后照常开发。
+- 若官方也改了 `electron/main.mjs`（如升级窗口代码），解决冲突时**注意保留 `WINDOW_ICON` 修复**（官方版本没有这段）。
+
+---
+
+### 二、给官方提 PR（只提交相关修复，别带个人工具）
+
+**原则**：PR 只含该改动相关的 commit。当前 fork main 上有个人 commit（`db1fe57a`），所以**不要**直接从 main 建 PR，用单独分支：
+
+```powershell
+# 1. 先同步官方最新（避免 PR 里带无关差异）
+git fetch upstream
+
+# 2. 从官方最新开新分支
+git checkout -b fix/win-window-icon upstream/main
+
+# 3. 只挑选相关修复 commit（按需 cherry-pick）
+git cherry-pick 72363b70   # 窗口图标 ICO
+# 若同一 PR 还想带 browser 修复：
+# git cherry-pick d560455d
+# cherry-pick 冲突时：解决后 git add <文件> && git cherry-pick --continue
+
+# 4. 推到 fork
+git push origin fix/win-window-icon
+
+# 5. 建 PR（二选一）
+#    网页：GitHub 自动提示 "Compare & pull request"，或直接访问
+#    https://github.com/milind-soni/OpenMausBot/compare/main...j4go:fix/win-window-icon
+#    （base = milind-soni:main，head = j4go:fix/win-window-icon）
+#
+#    gh CLI（需先 gh auth login）：
+#    gh pr create --repo milind-soni/OpenMausBot --base main --head j4go:fix/win-window-icon `
+#      --title "fix(electron): use multi-size ICO for Windows window icon" `
+#      --body "描述根因 + 验证结果"
+```
+
+PR 描述建议包含：
+- **根因**：Windows 任务栏渲染单张 PNG 窗口图标会出现白块；项目已有 `build/icon.ico`（多尺寸 32-bit）却未使用。
+- **验证**：本地构建后窗口图标非白像素占比 ~79%（修复前接近 0%）。
+- 改动文件：`electron/main.mjs`、`electron/resources/app-icon.ico`。
+
+注意事项：
+- `db1fe57a`（DEV-NOTES.md、dev.ps1、.gitignore）是本地个人工具，**不要** cherry-pick 进 PR 分支。
+- 官方合并新代码后，**先做第一节的 merge 同步**，再开新 PR 分支，避免 cherry-pick 冲突。
+- 一个 PR 尽量只解决一个问题（图标修复 / browser 脚本修复分开提更易被采纳）。
