@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Maple Mono NF CN 打头，原字体栈保留在第二位作为回退 */
+@theme {
+  --font-mono: "Maple Mono NF CN", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 /* Inline mentions keep the surrounding font metrics, including in the
    textarea mirror. No padding/border/font-weight changes that shift the caret. */
 .mention-highlight {
@@ -117,7 +122,7 @@
   --color-danger: #ff5667;
   --color-warning: #ff9800;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
 }
 
@@ -177,7 +182,7 @@
   --color-scrollbar: #3d3d3d;
   --color-maus-line: #fcfcfc;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
@@ -229,7 +234,7 @@
   --color-maus-line: #6b6559;
 
   /* System faces rather than Inter: paper reads as the platform's own. */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-sans: "Maple Mono NF CN", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
   --radius-lg: 6px;
   --radius-xl: 10px;
@@ -286,7 +291,7 @@
   --color-scrollbar: #3d3529;
   --color-maus-line: #b0a696;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
   --radius-lg: 4px;
   --radius-xl: 8px;
@@ -350,7 +355,7 @@
   --color-scrollbar: #a6b8b6;
   --color-maus-line: #4d5c5b;
 
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-sans: "Maple Mono NF CN", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
   --radius-lg: 8px;
   --radius-xl: 14px;
@@ -394,7 +399,7 @@
   --color-scrollbar: #464b54;
   --color-maus-line: #b3b8c2;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
   --radius-lg: 6px;
   --radius-xl: 10px;
@@ -438,7 +443,7 @@
   --color-scrollbar: #aeb6c0;
   --color-maus-line: #59616c;
 
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+  --font-sans: "Maple Mono NF CN", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, sans-serif;
   --radius-lg: 8px;
   --radius-xl: 12px;
@@ -481,7 +486,7 @@
   --color-scrollbar: #4a414f;
   --color-maus-line: #b9afbd;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
   --radius-lg: 8px;
   --radius-xl: 12px;
@@ -540,7 +545,7 @@
   --color-scrollbar: #c4c4c4;
   --color-maus-line: #5f5f5f;
 
-  --font-sans: "Inter", -apple-system, blinkmacsystemfont, "SF Pro Text",
+  --font-sans: "Maple Mono NF CN", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text",
     "Segoe UI", system-ui, sans-serif;
   --radius-lg: 8px;
   --radius-xl: 14px;
