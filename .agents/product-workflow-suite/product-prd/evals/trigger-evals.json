@@ -1,0 +1,19 @@
+[
+  {"query": "$product:prd 帮我写产品需求文档", "should_trigger": true},
+  {"query": "帮我把澄清结果整理成 PRD", "should_trigger": true},
+  {"query": "写一下这个功能的产品需求文档，要有验收标准", "should_trigger": true},
+  {"query": "PRD 还没写，先帮我生成", "should_trigger": true},
+  {"query": "帮我把用户故事和验收标准补充到 PRD 里", "should_trigger": true},
+  {"query": "修订一下 PRD，原型约束不够清楚", "should_trigger": true},
+  {"query": "这个需求要做 PRD，涉及多个角色和状态", "should_trigger": true},
+  {"query": "帮我补 PRD 的项目上下文探索章节", "should_trigger": true},
+
+  {"query": "帮我写技术方案", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false},
+  {"query": "先澄清一下需求", "should_trigger": false},
+  {"query": "帮我写测试用例", "should_trigger": false},
+  {"query": "帮我写开发计划", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "给这段代码写个单测用例", "should_trigger": false}
+]

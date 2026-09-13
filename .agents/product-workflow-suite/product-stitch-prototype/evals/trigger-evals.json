@@ -1,0 +1,58 @@
+[
+  {
+    "query": "$product:stitch-prototype 帮我做 Stitch 原型",
+    "should_trigger": true
+  },
+  {
+    "query": "用 Stitch SDK 生成原型",
+    "should_trigger": true
+  },
+  {
+    "query": "选 Stitch 作为原型路线",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我把 PRD 约束转成 Stitch prompt",
+    "should_trigger": true
+  },
+  {
+    "query": "Stitch 原型要注入 DESIGN.md 设计规则",
+    "should_trigger": true
+  },
+  {
+    "query": "Stitch MCP 不可用，帮我处理",
+    "should_trigger": true
+  },
+  {
+    "query": "Stitch 原型要覆盖 screen/frame 清单和状态",
+    "should_trigger": true
+  },
+  {
+    "query": "跑一下 run_stitch_prototype.mjs real adapter",
+    "should_trigger": true
+  },
+  {
+    "query": "$product:prototype 帮我做 HTML 原型",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写 PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写技术方案",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我配置 Git Hook",
+    "should_trigger": false
+  },
+  {
+    "query": "初始化单测环境",
+    "should_trigger": false
+  },
+  {
+    "query": "给这段代码写个单测用例",
+    "should_trigger": false
+  }
+]

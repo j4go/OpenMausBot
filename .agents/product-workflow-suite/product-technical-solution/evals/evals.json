@@ -1,0 +1,77 @@
+{
+  "skill_name": "product-technical-solution",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "tech_solution_detects_unit_test_infra_gap",
+      "prompt": "$product:technical-solution",
+      "files": ["sandbox/repo/pom.xml", "sandbox/workflow-dir/prd.md"],
+      "expected_output": "Checks the target implementation scope's unit test status (test framework, test command, junit.xml/coverage.xml output); if missing, writes a '单元测试基建缺口' section and marks product-unit-test-init as needed before kickoff",
+      "assertions": [
+        "Output inspects the target implementation scope's existing test framework, test command, and junit.xml / reports/coverage.xml output capability.",
+        "If the project lacks test framework, test command, or report artifacts, output writes a '单元测试基建缺口' section.",
+        "The gap section explicitly marks that product-unit-test-init is needed before kickoff; it does NOT run build/test init scripts in the tech-solution phase itself."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "tech_solution_detects_git_hook_gap",
+      "prompt": "$product:technical-solution",
+      "files": ["sandbox/repo/", "sandbox/workflow-dir/prd.md"],
+      "expected_output": "Checks current hook manager (Lefthook/pre-commit/Husky/etc), hook stages, quality command coverage across multi-tech subprojects; if missing writes 'Git Hook 质量门禁缺口' and marks product-git-hook-init as needed",
+      "assertions": [
+        "Output identifies the current hook manager (Lefthook / pre-commit / Husky / simple-git-hooks / raw git hooks / none).",
+        "Output checks quality command coverage (format/lint/typecheck/test/commit-msg/secret) and multi-tech-stack subproject coverage.",
+        "If pre-commit/pre-push quality gating is missing, output writes a 'Git Hook 质量门禁缺口' section and marks product-git-hook-init as a pre-kickoff task."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "tech_solution_reads_repo_wiki_codemaps",
+      "prompt": "$product:technical-solution",
+      "files": ["sandbox/repo/docs/repo-wiki/index.md", "sandbox/repo/docs/repo-wiki/codemaps/backend.md", "sandbox/workflow-dir/project-wiki.md"],
+      "expected_output": "Reads repo wiki basic pages plus architecture.md/modules.md/contracts.md/boundaries-and-red-flags.md and relevant codemaps/*.md; records read pages and source-verified paths; wiki conflicts resolve to source",
+      "assertions": [
+        "Output reads repo wiki basic pages (index.md/catalogue.json/status.md/shared-language.md) plus architecture.md, modules.md, contracts.md, boundaries-and-red-flags.md.",
+        "Output reads the relevant codemaps/*.md based on scope (backend.md for API/service, frontend.md for UI/routing, data.md for schema/migration).",
+        "Output records read wiki pages, source-verified paths, wiki freshness, gaps; when wiki conflicts with source, source wins and the conflict is documented."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "tech_solution_consumes_automation_test_plan",
+      "prompt": "$product:technical-solution",
+      "files": ["sandbox/workflow-dir/automation-test-plan.md", "sandbox/workflow-dir/prd.md"],
+      "expected_output": "Reads automation-test-plan.md, explains how AUTO-TASK-xxx, test env, test data, report artifacts and CI/local commands influence architecture, interfaces, observability, permissions, data prep and release risk",
+      "assertions": [
+        "Output reads automation-test-plan.md and references AUTO-TASK-xxx rather than re-inventing automation scope.",
+        "Output explains how test environment, test data, report artifacts, and CI/local commands influence architecture, interfaces, observability, and release risk.",
+        "Output inherits the 'Not Applicable' reason if automation-test-plan is marked Not Applicable, instead of re-inventing test scope."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "tech_solution_must_have_diagrams",
+      "prompt": "$product:technical-solution 涉及新的订单状态机和数据库迁移",
+      "files": ["sandbox/workflow-dir/prd.md"],
+      "expected_output": "Technical solution must include ER diagram, API table, state transitions, permission boundaries, data flow, release/rollback paths as Mermaid diagrams in technical-solution.md, not just prose",
+      "assertions": [
+        "Output includes ER diagram (or equivalent) for data model and state transition diagrams for the order state machine.",
+        "Output includes API summary table and permission boundary / data flow diagrams.",
+        "Output includes release and rollback paths, and uses Mermaid semantic or inline SVG/HTML-CSS diagrams (self-contained, no external CDN)."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "tech_solution_reads_wiki_then_source",
+      "prompt": "仓库里已有 docs/repo-wiki/。请做接口改动方案，先判断哪些能直接改，哪些要问我。",
+      "files": ["product-technical-solution/SKILL.md", "product-workflow/references/common-contracts.md"],
+      "expected_output": "先按 Wiki Context Gate 读 wiki，再回查源码确认接口。能直接改的写进方案，吃不准的先问。不重新生成 wiki。",
+      "assertions": [
+        "若存在 docs/repo-wiki/，先读 wiki 再写方案。",
+        "接口、权限、数据细节以源码回查为准。",
+        "区分能直接改和需要先问用户的项。"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+  "skill_name": "product-init",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请执行 $product:init。",
+      "expected_output": "按单问题问清项目阶段、交付目标、能否看代码、仓库结构、知识库、原型和测试发布策略；允许探查时做轻量探查；写出 docs/product-workflow/project-profile.md 和 .product-workflow-config.json。"
+    },
+    {
+      "id": 2,
+      "prompt": "请执行 $product:init --refresh。",
+      "expected_output": "先读已有 project-profile.md 和配置，只问变更、缺失、冲突或未解决问题，更新新鲜度证据，重写两份产物。"
+    },
+    {
+      "id": 3,
+      "prompt": "初始化产品工作流，但客户不允许你看代码或文件。",
+      "expected_output": "配置里记录 code_exploration 为 user_declined，在画像里写明限制，不检查源码。"
+    },
+    {
+      "id": 4,
+      "prompt": "这个项目有 frontend、backend、worker 三个仓库，请初始化产品工作流。",
+      "expected_output": "project_wiki 设为 required，记下多仓边界，完整 Wiki 留给 product:project-wiki。"
+    },
+    {
+      "id": 5,
+      "prompt": "我们只是整理现有 PRD 文档，不会实现，也不需要测试。",
+      "expected_output": "测试自动化可为 not_applicable 或 optional，并写明不做实现的原因。"
+    },
+    {
+      "id": 6,
+      "prompt": "这是已有生产系统，后面会做开发和发布，请初始化项目配置。",
+      "expected_output": "按实现导向设置 Wiki、测试和单测基建检查，并留下新鲜度证据。"
+    },
+    {
+      "id": 7,
+      "prompt": "项目配置还在，但 git 提交已经变了，继续跑产品工作流。",
+      "expected_output": "建议先 $product:init --refresh；用户坚持继续时，后续产物记录过期配置续跑和风险。"
+    },
+    {
+      "id": 8,
+      "prompt": ".product-workflow-config.json 解析失败，继续写 PRD。",
+      "expected_output": "不要猜工作流策略，先要求 refresh 再写 PRD。"
+    },
+    {
+      "id": 9,
+      "prompt": "客户默认原型走 Stitch，但当前功能想临时用 HTML。",
+      "expected_output": "必须有一次明确覆盖，记下原因和风险，再允许改原型路线。"
+    },
+    {
+      "id": 10,
+      "prompt": "初始化时用户说单仓，轻量探查却发现多个 .git 目录。",
+      "expected_output": "画像标草稿并记录冲突，先请用户确认仓库边界。"
+    },
+    {
+      "id": 11,
+      "prompt": "请执行 $product:init。仓库根目录没有 AGENTS.md，当前也没有 Codex 的 /init。",
+      "expected_output": "用 product-init/references/agents-charter-template.md 创建 AGENTS.md，不中断初始化。"
+    },
+    {
+      "id": 12,
+      "prompt": "请执行 $product:init。根目录已有 AGENTS.md，里面是团队自己的构建命令。",
+      "expected_output": "只追加工作流段落，保留原有构建命令。"
+    },
+    {
+      "id": 13,
+      "prompt": "这是 C# WPF 桌面项目，请初始化。后面要补单元测试。",
+      "expected_output": "识别 C#/WPF；单测初始化时加载 csharp 事例，不把 Java/Jest 事例当成必须迁移的工具。"
+    },
+    {
+      "id": 14,
+      "eval_name": "init_refresh_migrates_legacy_boards",
+      "prompt": "$product:init --refresh。项目根是 tests/fixtures/legacy-upgrade/。docs/product-development/ 里一个切片还有根目录 index.html，另一个只有 md 没有看板。请说明要跑的迁移命令，不要改夹具文件。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-workflow/references/common-contracts.md",
+        "tests/fixtures/legacy-upgrade/",
+        "tests/fixtures/eval-protocol.md"
+      ],
+      "expected_output": "Refresh 时运行 migrate_suite.mjs：升级 state schema、原型回链和章程托管块，扫描切片补 .review-board，迁走旧根目录 index.html；块外用户内容不动。",
+      "expectations": [
+        "Runs migrate_suite.mjs on the project root",
+        "Preserves user-authored content outside the managed charter block",
+        "Does not hand-write slice index.html as the upgrade"
+      ]
+    },
+    {
+      "id": 15,
+      "eval_name": "init_refresh_updates_managed_charter_version",
+      "prompt": "$product:init --refresh。项目 AGENTS.md 有 suite=v0.4.0 托管块，块外保留了团队自己的构建命令；请升级到当前套件版本。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-init/references/charter-rules.md",
+        "product-workflow/scripts/migrate_suite.mjs"
+      ],
+      "expected_output": "Runs migrate_suite.mjs. Replaces the managed charter block with the current VERSION marker and template, preserves all content outside the block byte-for-byte, and stops for user resolution if the managed block was manually edited.",
+      "assertions": [
+        "Runs migrate_suite.mjs rather than manually editing the marker.",
+        "Updates the managed block marker from suite=v0.4.0 to the version derived from VERSION.",
+        "Preserves user-authored AGENTS.md content outside the managed block.",
+        "Stops instead of overwriting when managed block content differs from the suite template."
+      ]
+    },
+    {
+      "id": 16,
+      "eval_name": "init_detects_impeccable_product_context",
+      "prompt": "$product:init。项目里已经有 .agents/skills/impeccable/SKILL.md，但没有 PRODUCT.md；请按现有集成初始化。",
+      "files": [
+        "product-workflow/scripts/detect_design_context.mjs",
+        "product-workflow/references/design-context.md"
+      ],
+      "expected_output": "Detects impeccable, follows its init path to create PRODUCT.md, and makes project-profile reference rather than duplicate user/task/platform/constraint fields.",
+      "assertions": [
+        "Runs detect_design_context.mjs and treats the installed skill as a positive target.",
+        "Creates or supplements PRODUCT.md without overwriting existing content.",
+        "Records design_context: impeccable and references PRODUCT.md from project-profile instead of duplicating overlapping facts."
+      ]
+    },
+    {
+      "id": 17,
+      "eval_name": "init_empty_workspace_asks_repo_then_clone",
+      "prompt": "$product:init。当前是空文件夹，我不会 Git。开发说仓库在 https://git.example/app.git，主分支 main。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-workflow/scripts/prepare_workspace.mjs"
+      ],
+      "expected_output": "Empty workspace asks for repo URL then runs prepare_workspace.mjs clone; does not ask the PM to run git clone.",
+      "assertions": [
+        "Output treats the empty folder as needing a repo URL before writing profile.",
+        "Output runs or names prepare_workspace.mjs with --repo (and branch if given).",
+        "Output does not tell the product manager to type git clone themselves."
+      ]
+    },
+    {
+      "id": 18,
+      "eval_name": "init_existing_git_skips_clone",
+      "prompt": "$product:init。当前目录已经是 git 仓库，里面有 README 和源码。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-workflow/scripts/prepare_workspace.mjs"
+      ],
+      "expected_output": "Existing git root skips clone and continues init inquiry.",
+      "assertions": [
+        "Output skips clone because .git already exists.",
+        "Output continues product-init inquiry or lightweight scan on this directory."
+      ]
+    },
+    {
+      "id": 20,
+      "eval_name": "init_detects_missing_limix_cli",
+      "prompt": "$product:init。工作区已经是 git 仓库。本机 which limix 没有输出。请初始化，并把后续 PRD 同步到软件门户。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-init/references/portal.md"
+      ],
+      "expected_output": "Detects missing Limix CLI, asks whether to install it, points to software portal downloads if yes, writes portal_sync=off if the user declines, continues profile, and does not claim portal sync succeeded.",
+      "assertions": [
+        "Checks for limix on PATH (command -v limix or limix --version).",
+        "Asks whether to install Limix CLI rather than assuming bound_project.",
+        "Points the user to /portals/software/downloads when recommending install.",
+        "Still writes or continues project-profile / config.",
+        "Does not run limix requirement upload or say the portal is already synced."
+      ]
+    },
+    {
+      "id": 21,
+      "eval_name": "init_asks_to_use_installed_limix",
+      "prompt": "$product:init。工作区已经是 git 仓库。limix --version 能跑。要不要用它同步软件门户？",
+      "files": [
+        "product-init/SKILL.md",
+        "product-init/references/portal.md"
+      ],
+      "expected_output": "Asks one question: use Limix to sync the portal? Recommended yes. On yes writes portal_sync=bound_project and docs/product-workflow/portal.md. Does not upload a slice during init.",
+      "assertions": [
+        "Detects limix is installed.",
+        "Asks whether to use Limix for portal sync; recommended answer is yes.",
+        "On yes, sets portal_sync=bound_project and writes docs/product-workflow/portal.md from the template.",
+        "Does not bind or upload a product-development slice during init."
+      ]
+    },
+    {
+      "id": 24,
+      "eval_name": "init_empty_workspace_then_limix_install_prompt",
+      "prompt": "$product:init。当前是空文件夹。开发给了仓库 https://git.example/app.git，分支 main。which limix 没有输出。我同意用 Limix 同步门户，也同意按你们网站上的提示词安装。",
+      "files": [
+        "product-init/SKILL.md",
+        "product-init/references/portal.md",
+        "product-workflow/scripts/prepare_workspace.mjs"
+      ],
+      "expected_output": "Asks for or uses the repo URL, clones with prepare_workspace.mjs, detects missing limix, opens software portal downloads, and waits for the page's AI install prompt instead of inventing an install script. Does not upload a requirement yet.",
+      "assertions": [
+        "Uses prepare_workspace.mjs with the given repo URL rather than asking the PM to type git clone.",
+        "Detects limix is missing and points to /portals/software/downloads.",
+        "Asks the user to paste the website AI install prompt; does not invent limix init flags or hook commands.",
+        "Does not run limix requirement create or upload before CLI is installed."
+      ]
+    },
+    {
+      "id": 22,
+      "eval_name": "portal_upload_asks_when_multiple_slices",
+      "prompt": "$product:prd 写完了，portal_sync=bound_project。docs/product-development/ 下有 2026-09-01-payment 和 2026-09-04-export 两个切片。当前目录是仓库根。请同步到门户。",
+      "files": [
+        "product-init/references/portal.md",
+        "product-workflow/references/common-contracts.md"
+      ],
+      "expected_output": "Lists both slice paths and asks which requirement to upload. Does not pick the newer date, does not upload docs/product-development itself.",
+      "assertions": [
+        "Does not run limix requirement upload until the user chooses a slice.",
+        "Does not use the latest dated folder as a default.",
+        "Does not pass the parent docs/product-development directory as the upload dir."
+      ]
+    },
+    {
+      "id": 23,
+      "eval_name": "portal_upload_does_not_guess_repo_as_requirement",
+      "prompt": "portal_sync=bound_project。工作区里有 frontend/ 和 backend/ 两个 git 仓，切片在 docs/product-development/2026-09-04-export/，cwd 现在在 backend/。请上传。",
+      "files": [
+        "product-init/references/portal.md"
+      ],
+      "expected_output": "Uploads the slice directory docs/product-development/2026-09-04-export/, not backend/. Does not create one requirement per git repo.",
+      "assertions": [
+        "Resolves the upload dir to the product-development slice, not the backend git root.",
+        "Does not bind or upload separately for frontend and backend.",
+        "Treats .limix/project.json at the workspace that owns the slice as the portal project."
+      ]
+    }
+  ]
+}

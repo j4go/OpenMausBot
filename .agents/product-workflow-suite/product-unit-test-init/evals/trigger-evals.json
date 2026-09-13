@@ -1,0 +1,24 @@
+[
+    {"query": "项目里现在没法跑测试，帮我初始化一下单测环境", "should_trigger": true},
+    {"query": "怎么配置覆盖率报告？我们需要输出 coverage.xml", "should_trigger": true},
+    {"query": "刚建的纯 Swift 库，帮我加一下测试基建", "should_trigger": true},
+    {"query": "我们的 Python 项目还没配 pytest，帮我弄一下", "should_trigger": true},
+    {"query": "CI 跑不过因为找不到 junit.xml，帮我在本地配置生成一下", "should_trigger": true},
+    {"query": "帮我给这个 TypeScript 项目配一下 ts-jest、junit.xml 和 coverage.xml 输出", "should_trigger": true},
+    {"query": "帮我把 kover 插件配到这个安卓项目的 build.gradle 里", "should_trigger": true},
+    {"query": "我们的 JS 项目需要配一下 Jest 和代码覆盖率输出", "should_trigger": true},
+    {"query": "项目完全是零测试状态，请从零开始帮我搭建测试管道", "should_trigger": true},
+    {"query": "覆盖率检查说找不到我的覆盖率文件，帮我把基建弄好", "should_trigger": true},
+    {"query": "技术方案阶段发现这个模块没有单元测试框架，也没有 junit.xml 和 coverage.xml，需要在 start implement 前先准备测试环境", "should_trigger": true},
+
+    {"query": "给这段代码写个单测用例", "should_trigger": false},
+    {"query": "帮我重构这段无法测试的老代码", "should_trigger": false},
+    {"query": "如何在本地配置 git push 检查脚本？", "should_trigger": false},
+    {"query": "帮我查一下这个报错：Jacoco plugin not found", "should_trigger": false},
+    {"query": "写一个 Python 脚本来批量重命名文件", "should_trigger": false},
+    {"query": "Android 怎么使用 Retrofit 发送请求？", "should_trigger": false},
+    {"query": "帮我分析一下这段代码的内存泄漏问题", "should_trigger": false},
+    {"query": "如何把这个项目发布到 Maven 中央仓库？", "should_trigger": false},
+    {"query": "给我写一段 Makefile 用来编译 main.c", "should_trigger": false},
+    {"query": "解释一下单元测试中的 Mock 和 Stub 有什么区别", "should_trigger": false}
+  ]

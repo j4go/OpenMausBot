@@ -1,0 +1,122 @@
+{
+  "skill_name": "product-develop",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "develop_required_hops_only",
+      "prompt": "开始写代码。PRD 和开发计划已评审。单测初始化还没做。",
+      "files": [
+        "sandbox/workflow-dir/.workflow-state.json"
+      ],
+      "expected_output": "必填是已批 PRD 和开发计划。单测初始化和 Git Hook 不挡编码。",
+      "assertions": [
+        "检查 prd.md 与 development-plan.md 是否 Reviewed。",
+        "单测基建未完成时建议补，不因此拒绝写业务代码。",
+        "PRD 或开发计划未批时才停止。"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "develop_tdd_red_green_evidence",
+      "prompt": "$product:develop 实现订单审核通过的逻辑（开发计划中的主题与该需求一致，已通过开工门禁；允许在该沙箱写入代码和测试）",
+      "files": [
+        "sandbox/develop-order-approval/"
+      ],
+      "expected_output": "For each behavior change in the approved plan, writes failing test first, runs and records RED evidence; writes minimal implementation; runs and records GREEN evidence; task-completion evidence includes RED+GREEN commands, modified files, covered TC-xxx, residual risk",
+      "assertions": [
+        "For each behavior change in the approved plan, output writes a failing test first and runs it to record RED evidence (failure reason correct).",
+        "Output writes only the minimal implementation to pass, then runs and records GREEN evidence (new test passes + regression passes).",
+        "Task-completion evidence includes RED command + failure summary, GREEN command + pass summary, modified files, covered TC-xxx, and residual risk."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "develop_stops_on_scope_conflict",
+      "prompt": "$product:develop 实现订单审核通过的逻辑（当前开发计划主题是对账单导出；不允许借用无关任务或伪造 TDD 证据）",
+      "files": [
+        "sandbox/workflow-dir/development-plan.md",
+        "sandbox/workflow-dir/prd.md",
+        "sandbox/workflow-dir/.workflow-state.json"
+      ],
+      "expected_output": "Detects that the user request conflicts with the approved development-plan topic, stops before writing tests or production code, does not fabricate RED/GREEN evidence, and routes back to development-plan or requests scope confirmation.",
+      "assertions": [
+        "Output identifies the mismatch between the user request and development-plan scope.",
+        "Output stops before writing tests or production code.",
+        "Output does not fabricate RED/GREEN evidence and routes back to development-plan or requests scope confirmation."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "develop_unit_test_skill_routing",
+      "prompt": "$product:develop 帮我给这个服务补单元测试",
+      "files": [
+        "sandbox/repo/services/audit.ts"
+      ],
+      "expected_output": "写单测走 product-unit-test-generator。缺测试基建时建议 product-unit-test-init，脚本交给用户跑。不暂停业务编码，除非用户要先补基建。",
+      "assertions": [
+        "写或补单测时走 product-unit-test-generator。",
+        "发现缺测试基建时建议 product-unit-test-init，不把业务实现硬停掉。",
+        "初始化脚本交给用户跑，不自动循环执行。"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "develop_inherits_start_implement_mode",
+      "prompt": "$product:develop",
+      "files": [
+        "sandbox/workflow-dir/development-plan.md"
+      ],
+      "expected_output": "Defaults to running start-implement --mode=auto equivalent gate + mode recommendation if called directly; does not write code before user approves execution mode unless already approved",
+      "assertions": [
+        "If called directly without start-implement, output runs an equivalent gate check and recommends single or multi-subagent mode.",
+        "Output does NOT write code before the user approves the execution mode (unless already approved in the same instruction).",
+        "Output inherits the TDD/review gates from start-implement rather than bypassing them."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "develop_critical_review_before_each_task",
+      "prompt": "$product:develop",
+      "files": [
+        "sandbox/workflow-dir/development-plan.md"
+      ],
+      "expected_output": "Before each task, identifies AI-uncertain execution problems; if goal/TC-AC/allowed-files/forbidden-scope/dependency-order/RED entry/verification command/subagent ownership is unclear, stops and asks user or goes back to dev-plan; no guess-and-implement",
+      "assertions": [
+        "Before each task, output identifies execution problems that AI cannot reliably confirm from approved artifacts, code exploration, and worktree state.",
+        "If task goal, allowed/forbidden file scope, dependency order, RED test entry, or verification command is unclear, output stops and asks the user or goes back to development-plan.",
+        "Output does NOT guess-and-implement through unclear tasks."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "frontend_develop_silent_when_impeccable_not_detected",
+      "prompt": "$product:develop。这个项目没有 impeccable skill，也没有 PRODUCT.md 或 DESIGN.md；按已批前端计划实现。",
+      "files": [
+        "product-workflow/scripts/detect_design_context.mjs",
+        "product-workflow/references/design-context.md"
+      ],
+      "expected_output": "Detection returns false; does not ask to install impeccable; still reads incumbent UI/components and follows the existing existing style.",
+      "assertions": [
+        "Treats no skill and no PRODUCT.md/DESIGN.md as detected=false.",
+        "Does not prompt the user to install impeccable.",
+        "Still reads existing UI/component evidence and does not invent a new visual system."
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "develop_miniprogram_uses_platform_evidence",
+      "prompt": "$product:develop。实现原生微信小程序页面的下载按钮，现有 app.json 和 project.config.json 可读。",
+      "files": [
+        "tests/fixtures/ui-stacks/miniprogram/",
+        "product-workflow/references/stacks/miniprogram.md"
+      ],
+      "expected_output": "Detects the mini-program platform, follows its navigation/permission/safe-area/component conventions, and records actual developer-tool/device evidence without claiming a fabricated run.",
+      "assertions": [
+        "Detects mini-program from app.json/project.config.json/WXML and reads stacks/miniprogram.md.",
+        "Uses the target platform APIs and existing components/request/storage conventions.",
+        "Distinguishes automated checks from developer-tool or real-device evidence and does not fabricate a successful device run.",
+        "Does not import Vue DOM or WPF/XAML patterns."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+[
+  {"query": "代码改完了，已经完成", "should_trigger": true},
+  {"query": "可以评审了", "should_trigger": true},
+  {"query": "开始下一个切片", "should_trigger": true},
+  {"query": "帮我收尾检查一下", "should_trigger": true},
+  {"query": "测试门禁已经通过，可以发布", "should_trigger": true},
+  {"query": "修完了，跟你汇报一下", "should_trigger": true},
+  {"query": "$product:wrap-up", "should_trigger": true},
+  {"query": "请执行收尾", "should_trigger": true},
+
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "帮我推荐开工方式", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "先澄清需求，不要收尾", "should_trigger": false}
+]

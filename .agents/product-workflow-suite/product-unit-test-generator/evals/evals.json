@@ -1,0 +1,194 @@
+{
+  "skill_name": "product-unit-test-generator",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "generate_swift_async_test_with_aaa",
+      "prompt": "帮我给这段 iOS 的异步登录代码写个单测。它是用 Swift 写的，包含一个网络请求。",
+      "files": [
+        "sandbox/ios-xcode-sandbox/LoginViewModel.swift"
+      ],
+      "expected_output": "XCTestCase subclass with AAA comments, async/await, no sleep()",
+      "assertions": [
+        "Output imports XCTest and defines a test class inheriting from XCTestCase.",
+        "Output contains explicit AAA structure markers (// Arrange, // Act, // Assert comments) in test methods.",
+        "Output handles async code using async/await or XCTestExpectation — does NOT use sleep() or Thread.sleep()."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "refactor_legacy_python_test",
+      "prompt": "审查并修复这个 Python 测试文件。它完全没有结构，里面还混进去了 if-else 判断。",
+      "files": [
+        "sandbox/python-sandbox/test_legacy_calculator.py"
+      ],
+      "expected_output": "Diagnosis report + refactored code using @pytest.mark.parametrize, no bare if-else",
+      "assertions": [
+        "Output includes a diagnosis section identifying structural problems in the original test.",
+        "Refactored test code uses `@pytest.mark.parametrize` to handle multiple input cases.",
+        "Refactored test code uses `assert` statements (not print or control flow) as the primary verification mechanism."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "monorepo_typescript_target_isolation",
+      "prompt": "这是一个 monorepo，根目录下有 package.json，但我需要你只为 frontend/utils/formatPrice.ts 写单测，不要被别的模块带偏。",
+      "files": [
+        "sandbox/monorepo/frontend/utils/formatPrice.ts",
+        "sandbox/monorepo/package.json",
+        "sandbox/monorepo/backend/auth-service.java"
+      ],
+      "expected_output": "TypeScript test file using the correct frontend test stack, zero Java or backend syntax",
+      "assertions": [
+        "Output generates tests for the TypeScript target file rather than the unrelated backend module.",
+        "Output uses TypeScript-compatible test syntax (for example Jest or Vitest style) and contains no Java or backend-only syntax."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "generate_java_parameterized_test",
+      "prompt": "为这段 Java 的计算器逻辑生成单元测试，需要覆盖多种边界输入。",
+      "files": [
+        "sandbox/java-sandbox/Calculator.java"
+      ],
+      "expected_output": "JUnit 5 @ParameterizedTest with CamelCase method names",
+      "assertions": [
+        "Output uses JUnit 5 @ParameterizedTest annotation to cover multiple boundary inputs.",
+        "Test method names follow CamelCase or descriptive naming convention (not single-word names)."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "generate_flutter_table_driven_test",
+      "prompt": "给这段 Flutter/Dart 代码补下单测，逻辑有多种情况需要验证。",
+      "files": [
+        "sandbox/flutter-sandbox/validator.dart"
+      ],
+      "expected_output": "Dart test file with group() blocks and a table-driven cases collection iterated with for, forEach, or an equivalent Dart iteration construct calling test()",
+      "assertions": [
+        "Output uses Dart test package with group() to organize related test cases.",
+        "Output uses a table-driven pattern: a list/map of cases is iterated with Dart `for`, `forEach`, or an equivalent iteration construct that calls `test()` for multiple input scenarios."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "generate_kotlin_mockk_test",
+      "prompt": "给这段 Kotlin 服务层代码补一个单测，里面有仓库依赖需要 Mock，还要覆盖成功和异常两种情况。",
+      "files": [
+        "sandbox/kotlin-sandbox/UserProfileService.kt"
+      ],
+      "expected_output": "Kotlin unit test using JUnit 5 and MockK or the existing Kotlin mocking stack",
+      "assertions": [
+        "Output uses Kotlin-compatible unit test syntax and a mocking approach appropriate for Kotlin code.",
+        "Output covers both the success path and an exception or failure path for the repository dependency."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "option_b_coverage_exclude",
+      "prompt": "帮我给这个 Android Activity 的 onCreate() 方法写单测。我知道它直接 new 了很多依赖，但这是老代码，风险太大，这个 PR 里改不了。",
+      "files": [
+        "sandbox/android-sandbox/app"
+      ],
+      "expected_output": "Coverage-exclusion path with a concrete exclusion annotation and a follow-up item, with no generated test code for the untestable method",
+      "assertions": [
+        "Output explicitly chooses the coverage-exclusion path because the legacy code cannot be refactored in this PR.",
+        "Output provides a concrete coverage exclusion annotation or comment for the Java/Android method (e.g. `@SuppressWarnings`, `COVERAGE_EXCLUDE`, or `@Generated`).",
+        "Output instructs the user to create a follow-up item to track the excluded code.",
+        "Output confirms that no new unit test code is generated for the `onCreate` method — the summary explicitly states no test function is produced."
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "legacy_vue_extracts_testable_helper",
+      "prompt": "这个 Nuxt/Vue 老页面挂载测试环境很难配，里面有表单校验和提交 payload 组装。请先让它能被单测覆盖，不要强行搭组件 mount。",
+      "files": [
+        "sandbox/legacy-vue/pages/account-bind.vue"
+      ],
+      "expected_output": "Extract pure helper functions for validation/payload/state mapping, test the helper with Jest/Vitest, and keep component shell changes minimal.",
+      "assertions": [
+        "Output proposes extracting pure helper logic for validation, payload construction, or state mapping.",
+        "Output generates or describes tests for the helper rather than forcing a component mount.",
+        "Output keeps the component shell focused on wiring/rendering and avoids broad UI refactors."
+      ]
+    },
+    {
+      "id": 9,
+      "eval_name": "coverage_exemption_doc_template",
+      "prompt": "这段代码当前确实没法测，需要走覆盖率豁免。请给出合规的豁免记录，而不是降低覆盖率阈值。",
+      "files": [
+        "sandbox/frontend/src/legacy/file-reader-adapter.ts"
+      ],
+      "expected_output": "Create or update docs/testing/coverage-exemptions.md with scope, reason, alternative verification, owner, and review timing.",
+      "assertions": [
+        "Output uses the fixed path `docs/testing/coverage-exemptions.md`.",
+        "Output includes the columns 范围, 原因, 替代验证, Owner, 回看时机.",
+        "Output does not lower the coverage threshold as the workaround."
+      ]
+    },
+    {
+      "id": 10,
+      "eval_name": "generate_go_table_driven_test",
+      "prompt": "帮我给这个 Go 服务函数补单测，要覆盖成功、非法输入和仓储返回错误。",
+      "files": [
+        "sandbox/go-sandbox/internal/service/user_service.go"
+      ],
+      "expected_output": "Go *_test.go with table-driven tests, AAA comments, injected fake repository, and no time.Sleep.",
+      "assertions": [
+        "Output generates Go tests in a `*_test.go` file using the standard testing package or the existing project test stack.",
+        "Output uses table-driven subtests with `t.Run`.",
+        "Output covers success, invalid input, and repository error paths.",
+        "Output avoids `time.Sleep` for synchronization."
+      ]
+    },
+    {
+      "id": 11,
+      "eval_name": "legacy_new_behavior_sprouts_testable_unit",
+      "prompt": "这个仓库没有测试。OrderService.place 直接打 Inventory 单例。本切片要加：sku 为空则拒绝。请补单测，不要为了测试去拆整个下单类。",
+      "files": [
+        "sandbox/legacy-order/OrderService.java",
+        "sandbox/legacy-order/Inventory.java",
+        "sandbox/legacy-order/Audit.java",
+        "sandbox/legacy-order/README.md"
+      ],
+      "expected_output": "Extract a testable unit for the new sku rule, test that unit, do not Mode-3 the whole OrderService, do not rewrite Inventory.",
+      "assertions": [
+        "Output treats this as a 遗留套件 / 增量覆盖 case (zero-test or equivalent).",
+        "Output puts the new sku-empty rule in a new testable function or type (抽出), not by making Inventory injectable.",
+        "Output generates or describes unit tests for that new unit, including the empty-sku case.",
+        "Output does not enter Mode 3 or rewrite OrderService/Inventory construction without asking."
+      ]
+    },
+    {
+      "id": 12,
+      "eval_name": "legacy_challenge_asks_before_mode3_or_exclude",
+      "prompt": "仓库没有测试。本切片只改报表日期格式。ReportJob.run 里打开库、拼 SQL、发邮件，没有注入点。请开工写单测。我还没说可以重构。",
+      "files": [
+        "sandbox/legacy-god-class/ReportJob.java",
+        "sandbox/legacy-god-class/README.md"
+      ],
+      "expected_output": "List 可测试性挑战 with a recommended answer; do not silently Mode 3; do not silently exclude; do not rewrite ReportJob.",
+      "assertions": [
+        "Output lists at least one 可测试性挑战 (range + why untestable + recommended answer).",
+        "Output does not apply Mode 3 or rewrite ReportJob in this turn.",
+        "Output does not write coverage-exclusion annotations or docs/testing/coverage-exemptions.md in this turn.",
+        "Recommended answer is narrow exclude + follow-up, or 抽出 if new behavior can live outside run()."
+      ]
+    },
+    {
+      "id": 13,
+      "eval_name": "legacy_new_file_must_have_unit_test",
+      "prompt": "遗留仓，几乎没测试。本切片新增 Discount.java 做折扣计算。请按套件写单测。",
+      "files": [
+        "sandbox/legacy-new-file/Discount.java",
+        "sandbox/legacy-new-file/README.md"
+      ],
+      "expected_output": "New file is 新增代码: must have unit tests; do not skip TDD because the repo is legacy.",
+      "assertions": [
+        "Output classifies Discount.java as 新增代码 that must have unit tests.",
+        "Output generates tests covering a valid discount and an invalid percent.",
+        "Output does not skip tests on the grounds that the surrounding repo is a 遗留套件."
+      ]
+    }
+  ]
+}

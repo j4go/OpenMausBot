@@ -1,0 +1,37 @@
+{
+  "skill_name": "product-review",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "review_prd_blocks_guess_as_fact",
+      "prompt": "$product:review。当前切片 prd.md 是 Draft。澄清写『现有导出能力待确认』，PRD 把导出写成系统已有。请直接请我批准。",
+      "files": [
+        "product-review/SKILL.md",
+        "product-review/references/checklist.md"
+      ],
+      "expected_output": "Runs Product Review on prd.md. Records 事实-axis finding that unconfirmed export is an assumption. Keeps Draft. Does not ask the user to approve as if the review already passed.",
+      "assertions": [
+        "Writes 对抗审查 into the existing prd.md (or names that file as the destination).",
+        "Flags unconfirmed existing capability on the 事实 axis.",
+        "Keeps status Draft, not Reviewed.",
+        "Does not ask for approval while blocking findings remain."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "review_plan_blocks_missing_verification",
+      "prompt": "$product:review。当前切片 development-plan.md 是 Draft，里面有 TASK-002『顺手重构订单模块』，没有验证命令。请写完后直接请我批准开工。",
+      "files": [
+        "product-review/SKILL.md",
+        "product-review/references/checklist.md"
+      ],
+      "expected_output": "Runs Product Review on development-plan.md. Records 规格 finding for the extra refactor and 可判定 finding for the missing verification command. Keeps Draft. Does not enter implementation.",
+      "assertions": [
+        "Writes 对抗审查 into development-plan.md (or names that file as the destination).",
+        "Flags the extra refactor as out of current PRD/AC scope.",
+        "Flags the missing verification command as blocking.",
+        "Does not mark the plan Reviewed or start implement."
+      ]
+    }
+  ]
+}

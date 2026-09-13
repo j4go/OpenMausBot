@@ -1,0 +1,123 @@
+{
+  "skill_name": "product-prototype",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "prototype_consumes_prd_constraint_contract",
+      "prompt": "$product:prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Extracts page/frame list, entry, main flow, state coverage, fields, design-system basis, interaction red lines from PRD's '原型约束契约'; covers each; does not invent un-authorized pages",
+      "assertions": [
+        "Output extracts and consumes every item of the PRD's '原型约束契约' (page list, entry, main flow, state coverage, fields, design-system basis, red lines).",
+        "Output does NOT add pages, entries, main flows, or business branches not authorized by the PRD.",
+        "Output records coverage and gaps of the constraint contract in the Prototype tab."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "prototype_html_is_interactive_not_prd_display",
+      "prompt": "$product:prototype 给订单审核页面做 HTML 原型",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "prototype.html is a standalone interactive prototype: clickable main flow, >=2 real controls, >=3 switchable states driven by JS; first screen is a product surface not a description page; NO large PRD background / user stories / AC matrix / test cases",
+      "assertions": [
+        "prototype.html first screen is an operable product surface, not a requirement description or onboarding page.",
+        "prototype.html contains at least 2 real interactive controls (form input, filter, toggle, modal, etc.) and at least 3 switchable states (default/empty/loading/error/success/permission).",
+        "prototype.html does NOT contain large PRD background, user stories, acceptance-criteria matrix, requirement lists, or test cases.",
+        "States are driven by JavaScript (or equivalent), not just static layout partitions."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "prototype_route_conflict_handling",
+      "prompt": "$product:prototype",
+      "files": [
+        "sandbox/repo/.product-workflow-config.json"
+      ],
+      "expected_output": "Reads workflow_policy.prototype_route; if route is stitch but user invoked HTML route, requests explicit override and records explicit_override + reason + risk; does not silently produce HTML",
+      "assertions": [
+        "Output reads workflow_policy.prototype_route from .product-workflow-config.json.",
+        "If route is stitch but HTML route was invoked, output requests explicit user override before proceeding.",
+        "If proceeding under override, output records explicit_override, reason, and risk in the artifact."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "prototype_tab_not_just_external_link",
+      "prompt": "$product:prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Prototype tab is projected from prototype.html and embeds main review content (main flow, representative panels, states, domain data, reuse basis, review decision points); not only a link to prototype.html",
+      "assertions": [
+        "The Prototype tab embeds main review content (main flow, representative panels, key states, reuse basis, review decision points).",
+        "The Prototype tab is NOT just a link to prototype.html or a short summary / screenshot placeholder.",
+        "If an independent prototype.html exists, it only serves as supplementary full-screen preview with a back-link to the board Prototype tab."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "prototype_non_ui_requirement_still_interactive",
+      "prompt": "$product:prototype 这是一个纯 CLI 命令行功能，没有界面",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Non-UI requirement still produces an interactive prototype: flow simulator, state machine sandbox, CLI/API interactive console, or permission/config switcher; only 'prototype not applicable' when user explicitly confirms",
+      "assertions": [
+        "Output produces an interactive prototype for the non-UI requirement (flow simulator, state-machine sandbox, CLI/API console, or equivalent).",
+        "Output does NOT output a static description as the only artifact unless the user explicitly confirms 'prototype not applicable'.",
+        "The interactive prototype covers main flow, state transitions, and real domain data relevant to the CLI function."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "prototype_consumes_design_context_without_inventing_style",
+      "prompt": "$product:prototype。项目根是 tests/fixtures/design-context-present/，里面已有 DESIGN.md。请做本次页面原型。",
+      "files": [
+        "product-workflow/references/design-context.md",
+        "product-workflow/scripts/detect_design_context.mjs",
+        "tests/fixtures/design-context-present/",
+        "tests/fixtures/eval-protocol.md"
+      ],
+      "expected_output": "Reads DESIGN.md before generating the prototype, reuses its tokens/components and records gaps; does not invent a replacement style.",
+      "assertions": [
+        "Runs detect_design_context.mjs and reads DESIGN.md.",
+        "Uses existing design tokens/components/platform constraints.",
+        "Records a gap or asks when design evidence is missing or conflicts; does not create a generic replacement design system."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "prototype_vue_uses_vue_stack_reference",
+      "prompt": "$product:prototype。目标是现有 Vue 订单列表的批量下载按钮，请沿用当前组件和设计。",
+      "files": [
+        "tests/fixtures/ui-stacks/vue/",
+        "product-workflow/references/stacks/vue.md"
+      ],
+      "expected_output": "Detects Vue, reads only the Vue UI stack reference for this target, reuses the existing component/API style, and does not introduce WPF or mini-program patterns.",
+      "assertions": [
+        "Detects Vue from package.json or .vue files and reads stacks/vue.md.",
+        "Reuses the incumbent Vue version, component library, state/request patterns and design evidence.",
+        "Does not introduce XAML, WPF navigation, mini-program APIs, or a new UI/CSS system."
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "prototype_assets_and_backlink_use_script",
+      "prompt": "$product:prototype。prototype.html 已完成，里面有 mermaid 图，但还没回到 Review Board 的链接和本地资源。",
+      "files": [
+        "product-workflow/scripts/prepare_prototype.mjs"
+      ],
+      "expected_output": "Runs prepare_prototype.mjs to add one .review-board/index.html#prototype backlink, add local mermaid script and copy mermaid.min.js; rerunning is idempotent.",
+      "assertions": [
+        "Runs prepare_prototype.mjs instead of hand-editing mechanical assets.",
+        "Adds exactly one Review Board prototype backlink.",
+        "Uses ./mermaid.min.js and copies the bundled asset without a CDN or Playwright.",
+        "A second run does not duplicate the link or script."
+      ]
+    }
+  ]
+}

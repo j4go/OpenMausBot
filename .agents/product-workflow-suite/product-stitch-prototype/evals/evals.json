@@ -1,0 +1,75 @@
+{
+  "skill_name": "product-stitch-prototype",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "stitch_prototype_blocked_on_mcp_failure_no_fallback",
+      "prompt": "$product:stitch-prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "If Stitch MCP/SDK unavailable/unauthenticated/cannot-create-project/cannot-read-metadata, marks stage Blocked, does NOT auto-fallback to HTML; records recovery path for user to fix Stitch or approve route switch",
+      "assertions": [
+        "If Stitch MCP/SDK is unavailable, unauthenticated, cannot create/update project, or cannot read metadata, output marks the stage as Blocked.",
+        "Output does NOT auto-fallback to HTML when Stitch fails.",
+        "stitch-prototype.md records the failure reason and a recovery path (fix Stitch or user-approve route switch)."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "stitch_prototype_consumes_prd_constraint_contract",
+      "prompt": "$product:stitch-prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Extracts page/frame list, entry, main flow, states, fields, real data, design-system basis, red lines from PRD '原型约束契约'; builds Stitch prompt; records PRD coverage matrix and >=3 state coverage",
+      "assertions": [
+        "Output extracts page/frame list, entry, main flow, states, fields, real data, and red lines from the PRD '原型约束契约'.",
+        "Output builds a Stitch prompt containing page/frame, main flow, state coverage, real fields, sample data, design-system basis, and red lines.",
+        "stitch-prototype.md records a PRD coverage matrix mapping each constraint to Stitch evidence or gap, and at least 3 state coverage types."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "stitch_prototype_sdk_runner_real_adapter",
+      "prompt": "$product:stitch-prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Preferably uses run_stitch_prototype.mjs with real adapter; requires STITCH_API_KEY or STITCH_ACCESS_TOKEN + GOOGLE_CLOUD_PROJECT; mock adapter only for E2E/contract testing; does not treat mock metadata as real Stitch project info",
+      "assertions": [
+        "Output preferably uses run_stitch_prototype.mjs with the real adapter.",
+        "Output requires STITCH_API_KEY or (STITCH_ACCESS_TOKEN + GOOGLE_CLOUD_PROJECT) for authentication.",
+        "The mock adapter is used only for E2E/contract testing; mock metadata is not treated as real Stitch project info."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "stitch_prototype_route_conflict_handling",
+      "prompt": "$product:stitch-prototype",
+      "files": [
+        "sandbox/repo/.product-workflow-config.json"
+      ],
+      "expected_output": "Reads workflow_policy.prototype_route; if route is html but stitch invoked, requests explicit override + records explicit_override/reason/risk/recovery-path; does not silently proceed",
+      "assertions": [
+        "Output reads workflow_policy.prototype_route from .product-workflow-config.json.",
+        "If route is html but stitch-prototype was invoked, output requests explicit user override.",
+        "If proceeding under override, output records explicit_override, reason, risk, and recovery path in stitch-prototype.md."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "stitch_prototype_tab_not_just_external_link",
+      "prompt": "$product:stitch-prototype",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Prototype tab embeds main review content (Stitch project info, screen/frame list, coverage matrix, state coverage, gaps, recovery actions); not only an external Stitch link; if prototype.html coexists, shows combined route",
+      "assertions": [
+        "The Prototype tab embeds main review content (Stitch project info, screen/frame list, coverage matrix, state coverage, gaps, recovery actions).",
+        "The Prototype tab is NOT only an external Stitch link.",
+        "If prototype.html coexists in the same directory, the Prototype tab shows the combined route without overwriting each other."
+      ]
+    }
+  ]
+}

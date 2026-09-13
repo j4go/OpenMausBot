@@ -1,0 +1,15 @@
+[
+  {"query": "帮我配置 Git Hook", "should_trigger": true},
+  {"query": "给 Java 后端和 H5 前端配提交前检查", "should_trigger": true},
+  {"query": "Android 和 iOS 仓库也要统一门禁", "should_trigger": true},
+  {"query": "Lefthook 怎么接入这个多技术栈项目", "should_trigger": true},
+  {"query": "pre-commit 已经有了，帮我检查", "should_trigger": true},
+  {"query": "commit-msg 里加一下 commitlint", "should_trigger": true},
+  {"query": "hook 验证失败了，帮我看一下", "should_trigger": true},
+  {"query": "把 npm run test:coverage 接到 pre-push 里面", "should_trigger": true},
+  {"query": "团队已经配置了覆盖率阈值，帮我放进 Git Hook 门禁", "should_trigger": true},
+  {"query": "帮我写一个单元测试", "should_trigger": false},
+  {"query": "初始化 JUnit XML 和 coverage.xml", "should_trigger": false},
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "修复这个 React 组件样式", "should_trigger": false}
+]

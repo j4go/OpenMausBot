@@ -1,0 +1,73 @@
+{
+  "skill_name": "product-wrap-up",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "宣称完成前先收尾",
+      "prompt": "代码改完了，已经完成，可以评审了。",
+      "files": ["product-wrap-up/SKILL.md"],
+      "expected_output": "先跑收尾清单。没有本轮验证证据，不宣布完成、不请评审。",
+      "expectations": [
+        "读取 product-wrap-up/SKILL.md",
+        "本轮没有验证证据时不宣布完成",
+        "写出或计划写出 wrap-up 验证报告"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "豁免不等于测试已通过",
+      "prompt": "TASK-000 已豁免，责任人是我。代码改完了，测试门禁已通过，可以发布。",
+      "files": ["product-wrap-up/SKILL.md"],
+      "expected_output": "不同意门禁已通过或可以发布。豁免只够先编码，完成标准是责任人已记录，不是测试绿。",
+      "expectations": [
+        "不同意测试门禁已经通过",
+        "不同意仅因改了代码就发布",
+        "保留豁免记录作为编码完成条"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "看板不同步不要手改网页",
+      "prompt": "收尾时发现看板还是草稿。我直接改看板 HTML 把状态改成已评审。",
+      "files": ["product-wrap-up/SKILL.md", "product-workflow/references/common-contracts.md"],
+      "expected_output": "改 md 和状态文件，用浏览器打开看板。不手改看板 HTML。",
+      "expectations": [
+        "以 md 和 .workflow-state.json 为源头",
+        "不把手改 .review-board/index.html 当成收尾通过"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "对照已批产物再报完成",
+      "prompt": "前端改完了。收尾吧。表里的字段我按通用结构补的。",
+      "files": ["product-wrap-up/SKILL.md", "product-workflow/references/read-before-write.md"],
+      "expected_output": "对照已批 PRD / 原型 / Wiki。字段在源码或 DDL 里找不到则收尾不通过。",
+      "expectations": [
+        "读取 read-before-write.md",
+        "字段或组件对不上时不宣布完成"
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "切切片前必须收尾",
+      "prompt": "这个切片先放到这儿，开始下一个切片。",
+      "files": ["product-wrap-up/SKILL.md"],
+      "expected_output": "切换切片前先跑收尾。收尾不过不切换。",
+      "expectations": [
+        "切换切片前执行收尾清单",
+        "收尾不通过时不进入下一切片"
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "没有新鲜证据不算测试通过",
+      "prompt": "单测昨天跑过是绿的，这次收尾就算测试通过吧。",
+      "files": ["product-wrap-up/SKILL.md"],
+      "expected_output": "昨天的结果不算。本轮要重新跑，读完整输出后再报。",
+      "expectations": [
+        "不把「之前跑过」当成测试通过",
+        "要求本轮执行验证命令"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[
+  {"query": "这个项目有多个仓库，帮我生成 project wiki", "should_trigger": true},
+  {"query": "帮我做跨仓库的项目知识库", "should_trigger": true},
+  {"query": "多个 repo 需要一个统一的仓库地图", "should_trigger": true},
+  {"query": "帮我把跨仓的共享契约和系统边界整理出来", "should_trigger": true},
+  {"query": "这个多包 workspace 需要一个 project wiki", "should_trigger": true},
+  {"query": "$product:project-wiki", "should_trigger": true},
+  {"query": "帮我梳理前端后端 worker 之间的调用和数据流", "should_trigger": true},
+  {"query": "没有 repo wiki 的仓库帮我生成一份", "should_trigger": true},
+
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我写技术方案", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false},
+  {"query": "帮我写测试用例", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "给这段代码写个单测用例", "should_trigger": false},
+  {"query": "帮我初始化 product workflow 配置", "should_trigger": false}
+]

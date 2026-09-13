@@ -1,0 +1,92 @@
+{
+  "skill_name": "product-project-wiki",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "project_wiki_multi_repo_routing",
+      "prompt": "这个项目有 frontend、backend、worker 三个仓库，帮我生成 project wiki",
+      "files": [
+        "sandbox/multi-repo/frontend/",
+        "sandbox/multi-repo/backend/",
+        "sandbox/multi-repo/worker/"
+      ],
+      "expected_output": "Identifies multi-repo boundary, builds repo/package map, sets project_wiki to required, generates repo-wikis/<repo-slug>.md for repos missing a wiki, builds Repo Wiki status matrix distinguishing existing-wiki vs generated-wiki repos",
+      "assertions": [
+        "Output identifies three repository boundaries (frontend/backend/worker) from git remote, workspace config, or directory structure.",
+        "Output builds a repo/package map with path, responsibility, tech stack, entry points, test commands, deployment units.",
+        "Output builds a Repo Wiki status matrix marking each repo as has-existing-wiki (cite) or no-wiki (generate repo-wikis/<repo-slug>.md).",
+        "Output does NOT copy an entire repo wiki into the Project Wiki; it only cross-references and summarizes."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "project_wiki_single_repo_lightweight",
+      "prompt": "这是单个仓库，帮我也做一下 project wiki",
+      "files": [
+        "sandbox/single-repo/"
+      ],
+      "expected_output": "Writes a lightweight Project Wiki marking 'single-repo fact', does NOT mislabel it as multi-repo, does NOT rename main artifact to Repo Wiki; title/catalogue must say 'Project Wiki'",
+      "assertions": [
+        "Output writes a lightweight Project Wiki even for a single repo, marking it as a single-repo fact.",
+        "Output does NOT mislabel a single-repo project as multi-repo.",
+        "Main artifact title and catalogue title say 'Project Wiki', not 'Repo Wiki'."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "project_wiki_distinguishes_evidence_vs_assumption",
+      "prompt": "$product:project-wiki",
+      "files": [
+        "sandbox/workflow-dir/clarify.md"
+      ],
+      "expected_output": "Generated repo wiki and Project Wiki must distinguish file-evidence-confirmed facts, code-inferred assumptions, and owner-to-confirm items; does not write guesses as facts",
+      "assertions": [
+        "Output distinguishes file-evidence-confirmed facts from code-inferred assumptions and owner-to-confirm items.",
+        "Output does not write unverified guesses as confirmed project facts.",
+        "Output records risks, assumptions, and open questions marking which repo/module/downstream-stage is affected."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "project_wiki_code_exploration_declined",
+      "prompt": "这个客户不允许看代码，但允许用已有文档，帮我生成 project wiki",
+      "expected_output": "Inherits code_exploration user_declined; does not inspect source/tests/config/CI; only uses user-allowed docs and existing artifacts; records the limitation",
+      "assertions": [
+        "Output does NOT inspect source files, tests, config, or CI after the user declines code exploration.",
+        "Output only uses user-provided info, existing project-profile/config, existing product artifacts, and user-allowed documents.",
+        "Output records the code_exploration user_declined limitation and its downstream impact."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "project_wiki_documents_detected_frontend_once",
+      "prompt": "首次生成 Project Wiki。项目有前端代码和 PRODUCT.md，探测到 impeccable，但还没有 DESIGN.md。",
+      "files": [
+        "product-workflow/scripts/detect_design_context.mjs",
+        "product-workflow/references/design-context.md"
+      ],
+      "expected_output": "Uses impeccable document once to create DESIGN.md, records its path and git commit in Project Wiki, and does not copy design tokens into the Wiki.",
+      "assertions": [
+        "Detects impeccable through PRODUCT.md or the installed skill.",
+        "Routes first-time frontend documentation to impeccable document because DESIGN.md is absent.",
+        "Records the DESIGN.md path and generation commit, referencing rather than copying tokens/components.",
+        "Does not rerun document on every product slice."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "repo_wiki_meta_is_script_generated",
+      "prompt": "Project Wiki 的 Markdown 已写好，请生成 docs/repo-wiki/catalogue.json 和 _meta/status.md。",
+      "files": [
+        "product-workflow/scripts/generate_repo_wiki_meta.mjs"
+      ],
+      "expected_output": "Runs generate_repo_wiki_meta.mjs; catalogue pages come from existing Markdown in docs/project-wiki and docs/repo-wiki; status records the current git commit/non-git marker. Does not hand-write either mechanical file.",
+      "assertions": [
+        "Runs generate_repo_wiki_meta.mjs on the project root.",
+        "catalogue.json contains paths/titles derived from Markdown and excludes _meta/status.md.",
+        "_meta/status.md records current git commit or non-git and page count.",
+        "Does not hand-write catalogue.json or status.md for Project Wiki or Repo Wiki."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "skill_name": "product-test-cases",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "test_cases_ac_to_tc_traceability",
+      "prompt": "$product:test-cases",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "Each PRD acceptance criterion maps to at least one test case; >=20 P0/P1/P2 cases for a normal product requirement; cases grouped by priority",
+      "assertions": [
+        "Every PRD acceptance criterion (AC-xxx) maps to at least one test case (TC-xxx).",
+        "Output contains at least 20 test cases for a normal product requirement, unless the PRD explicitly scopes it smaller.",
+        "Test cases are grouped by P0/P1/P2 priority."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "test_cases_cover_boundary_error_permission",
+      "prompt": "$product:test-cases",
+      "files": [
+        "sandbox/test-cases-complete/prd.md",
+        "sandbox/test-cases-complete/prototype.html"
+      ],
+      "expected_output": "Cases cover main flow, alternative flow, boundary, error state, permission, data boundary, compatibility, observability, regression; each case has prep, steps, expected result, test data, automation suggestion",
+      "assertions": [
+        "Cases cover main flow, alternative flow, boundary, error state, and permission/data-boundary scenarios.",
+        "Each case includes prep, steps/operation, expected result, test data, and automation suggestion.",
+        "Cases cover compatibility, observability, gray-release, and regression checks where applicable."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "test_cases_explores_project_test_system",
+      "prompt": "$product:test-cases",
+      "files": [
+        "sandbox/repo/docs/repo-wiki/index.md",
+        "sandbox/workflow-dir/project-wiki.md"
+      ],
+      "expected_output": "Searches existing test dirs/frameworks/fixtures/mocks/verification scripts; reads repo wiki verification-gates/contracts/codemaps; writes project test context (reusable patterns, existing coverage, gaps, suggested automation layer)",
+      "assertions": [
+        "Output searches existing test directories, test frameworks, e2e/unit/integration tests, test data, mocks, fixtures, and verification scripts.",
+        "Output reads repo wiki basic pages plus contracts.md, workflows.md, verification-gates.md, and relevant codemaps/*.md.",
+        "Output writes project test context: reusable test patterns, existing coverage, gaps, and suggested automation layer per case."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "test_cases_ambiguous_ac_must_ask",
+      "prompt": "$product:test-cases 这条验收标准写得很模糊：'系统要好用'",
+      "files": [
+        "sandbox/workflow-dir/prd.md"
+      ],
+      "expected_output": "If an AC is ambiguous/conflicting/lacks observable result making pass/fail undecidable, ask the user or go back to PRD/prototype before writing cases; don't guess P0/P1/P2",
+      "assertions": [
+        "Output detects that the acceptance criterion is ambiguous or lacks an observable result making pass/fail undecidable.",
+        "Output asks the user or goes back to PRD/prototype revision before writing the affected cases, rather than guessing P0/P1/P2.",
+        "Output does not write blocking unknowns as assumptions and continue producing the full test case set."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "test_cases_unit_test_generator_routing",
+      "prompt": "$product:test-cases 然后帮我把这些用例的单元测试直接写到代码库里",
+      "files": [
+        "sandbox/repo/"
+      ],
+      "expected_output": "For writing unit test files into the codebase, routes to product-unit-test-generator; if test infra is missing, routes to product-unit-test-init; does not generate test code directly in test-cases phase",
+      "assertions": [
+        "For writing/generating actual unit test files into the codebase, output routes to product-unit-test-generator rather than generating test code directly.",
+        "If the project lacks test infrastructure (no junit/coverage reports), output routes to product-unit-test-init.",
+        "The test-cases phase itself does NOT generate or execute test code."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "test_cases_wpf_ui_use_wpf_boundaries",
+      "prompt": "$product:test-cases。这个切片是 WPF 保存按钮和 ViewModel 命令，请按现有技术栈写测试范围。",
+      "files": [
+        "tests/fixtures/ui-stacks/wpf-ui/",
+        "product-workflow/references/stacks/wpf-ui.md"
+      ],
+      "expected_output": "Detects WPF, loads the WPF UI reference, tests ViewModel/Command/Converter behavior and explicit UI checks without inventing browser DOM tests.",
+      "assertions": [
+        "Detects WPF from UseWPF/XAML and reads stacks/wpf-ui.md.",
+        "Targets ViewModel, commands, converters and business behavior rather than generated XAML coverage.",
+        "Does not use browser DOM selectors, Vue Test Utils, or mini-program APIs."
+      ]
+    }
+  ]
+}

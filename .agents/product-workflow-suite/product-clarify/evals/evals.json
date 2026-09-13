@@ -1,0 +1,89 @@
+{
+  "skill_name": "product-clarify",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "clarify_minimal_requirement_asks_single_question",
+      "prompt": "$product:clarify 我想做一个订单管理系统",
+      "expected_output": "Recognizes missing target user / trigger scenario / success metric, asks exactly one clarifying question per turn, does not write a full clarification artifact before the user answers",
+      "assertions": [
+        "Output identifies that the input lacks target user, trigger scenario, or success metric.",
+        "Output asks only ONE decision point in the first turn (single-question clarification protocol), not a batch table.",
+        "Output does not generate the full clarification artifact (clarify.md) before the user answers."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "clarify_reads_init_config_and_inherits_product_mode",
+      "prompt": "$product:clarify 给现有交易平台加一个供应商对账功能",
+      "files": ["sandbox/existing-platform/.product-workflow-config.json", "sandbox/existing-platform/docs/product-workflow/project-profile.md"],
+      "expected_output": "Reads .product-workflow-config.json and project-profile.md, inherits workflow_policy.product_mode (likely one_to_n), does not re-ask project-level questions already settled by $product:init",
+      "assertions": [
+        "Output reads .product-workflow-config.json and docs/product-workflow/project-profile.md before writing the clarification.",
+        "Output inherits workflow_policy.product_mode and clarification_style from the config instead of re-asking project-level questions.",
+        "Output does not re-ask repository structure, knowledge base state, or testing strategy already answered by initialization."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "clarify_unknown_mode_only_draft_not_reviewed",
+      "prompt": "$product:clarify 帮我做一个新东西，我自己也没想清楚",
+      "files": ["sandbox/no-config/"],
+      "expected_output": "Detects product_mode is unknown, asks one question to confirm mode or requests explicit assume-and-continue authorization; does NOT mark the stage as Reviewed unless user explicitly accepts assumptions",
+      "assertions": [
+        "Output recognizes product_mode as unknown (or missing) and asks one question to confirm the mode before proceeding.",
+        "If generating a draft clarification, the status is Draft, not Reviewed, unless the user explicitly accepts the mode assumption and risks.",
+        "Output lists the assumptions and affected downstream stages (PRD/prototype/test/technical-solution) when proceeding under assumption."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "clarify_explores_project_context_before_writing",
+      "prompt": "$product:clarify 给现有的 CLI 工具加一个 doctor 子命令",
+      "files": ["sandbox/clarify-cli/"],
+      "expected_output": "Extracts 3-8 keywords, runs rg to search related code/docs/tests, distinguishes confirmed facts from assumptions in the clarification artifact",
+      "assertions": [
+        "Output lists 3-8 extracted keywords, records an actually executed rg or equivalent command, and reports matching paths or an explicit no-match result for related code/docs/tests/config.",
+        "Output reads project-wiki.md repo map / repo wiki basic pages if they exist before writing the artifact.",
+        "Output separates confirmed project-context facts, repo-wiki navigation facts, source-verified facts, and unconfirmed assumptions in the artifact."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "clarify_blocking_uncertainty_must_ask_before_artifact",
+      "prompt": "$product:clarify 给支付系统加风控",
+      "expected_output": "Builds an uncertainty queue, ranks by impact, asks the highest-priority blocking question before writing the full artifact; does not bury blocking unknowns as assumptions and continue",
+      "assertions": [
+        "Output builds an uncertainty queue and ranks items by impact on scope / acceptance / permissions / data / release / verifiability.",
+        "Output asks the single highest-priority blocking decision before producing the full clarification artifact.",
+        "Output does not merely write blocking unknowns into the 'assumptions' or 'open questions' section and continue generating the full artifact."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "clarify_does_not_ask_lookupable_facts",
+      "prompt": "$product:clarify 给现有订单列表加批量下载。仓库根是 tests/fixtures/order-list-export/，里面已经有订单列表页、导出接口和项目配置，请先澄清再写。",
+      "files": [
+        "tests/fixtures/order-list-export/",
+        "tests/fixtures/eval-protocol.md"
+      ],
+      "expected_output": "Looks up existing list page, export API and commands first; does not ask the user whether those files or APIs exist. Only asks a remaining product decision, with a recommended answer.",
+      "assertions": [
+        "Runs rg or equivalent and records existing page/API/command evidence before asking.",
+        "Does not ask the user whether the current list page, export API, or test command exists.",
+        "Any remaining question is a product decision, not a lookupable repository fact."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "clarify_question_includes_recommended_answer",
+      "prompt": "$product:clarify 订单列表要不要对已关闭订单也开放批量下载？",
+      "expected_output": "Asks at most one decision, includes a recommended answer with rationale, and waits; does not write the full clarify.md before the user answers.",
+      "assertions": [
+        "Asks only one decision point in the turn.",
+        "States a recommended answer and the reason (risk, existing behavior, or safer default).",
+        "Does not generate the full clarification artifact before the user answers or authorizes assume-and-continue."
+      ]
+    }
+  ]
+}

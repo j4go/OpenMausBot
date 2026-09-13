@@ -1,0 +1,70 @@
+[
+  {
+    "query": "$product:plan 帮我写开发计划",
+    "should_trigger": true
+  },
+  {
+    "query": "$product:development-plan 帮我写开发计划",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我把技术方案拆成可执行的开发任务",
+    "should_trigger": true
+  },
+  {
+    "query": "写一下任务顺序、文件范围和验证命令",
+    "should_trigger": true
+  },
+  {
+    "query": "开发计划里要包含 TDD 检查点",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我把 AUTO-TASK 加进开发计划的实现顺序",
+    "should_trigger": true
+  },
+  {
+    "query": "技术方案标记了单测基建缺口，开发计划要加前置任务",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我列一下每个任务的 ownership 和禁止并行的边界",
+    "should_trigger": true
+  },
+  {
+    "query": "开发计划要把 git hook 初始化列为开工前置任务",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我写技术方案",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写 PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我开工实现代码",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写测试用例",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我配置 Git Hook",
+    "should_trigger": false
+  },
+  {
+    "query": "初始化单测环境",
+    "should_trigger": false
+  },
+  {
+    "query": "给这段代码写个单测用例",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我画原型",
+    "should_trigger": false
+  }
+]

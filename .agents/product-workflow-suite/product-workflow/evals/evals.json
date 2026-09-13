@@ -1,0 +1,261 @@
+{
+  "skill_name": "product-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "$product:workflow 为现有支付平台增加支付流程：目标用户是已登录客户和支付管理员；客户从订单详情点击支付，管理员处理异常支付；成功指标是授权支付成功率和重复请求不重复扣款。范围包含前端支付页、后端支付 API、权限校验和幂等处理；不包含退款和真实资金联调。项目已初始化，所有阶段 skill 可用，用户明确允许按 through-run 执行；允许在 `sandbox/workflow-full/` 内写入本次 workflow 产物和状态，不能写入其它路径。",
+      "files": [
+        "sandbox/workflow-full/"
+      ],
+      "expected_output": "After confirming the initialized config and explicit through-run authorization, delegates the available stages in order: product-init, clarify, project-wiki, prd, prototype, test-cases, test-automation, technical-solution, development-plan, start-implement, develop; generates automation-test-plan.md before technical-solution.md, records each stage result, and does not claim a stage completed when its delegate or gate is unavailable.",
+      "assertions": [
+        "Output uses the initialized one_to_n config and explicit through-run mode.",
+        "Output preserves the required stage order and places automation-test-plan.md before technical-solution.md.",
+        "Output records each stage result in the workflow state or equivalent stage artifact, keeps all AI-written stages Draft or Blocked (never Reviewed), and does not claim an unavailable delegate completed."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "$product:workflow 只整理已有 PRD 文档，不涉及实现（项目已初始化，已有 PRD 可读取，用户明确确认自动化测试不适用；允许在 `sandbox/workflow-na/` 内写入 workflow 产物和状态，不能写入其它路径）",
+      "files": [
+        "sandbox/workflow-na/"
+      ],
+      "expected_output": "Writes the explicit no-implementation reason to automation-test-plan.md and the workflow state, marks Test Automation Not Applicable, and does not generate fictional automation tasks.",
+      "assertions": [
+        "Output selects stage-gated for the single documentation slice unless the user explicitly requests through-run.",
+        "Output writes the no-implementation reason and marks Test Automation Not Applicable in automation-test-plan.md and workflow state.",
+        "Output does not invent AUTO-TASK items or proceed to start-implement/develop."
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "$product:workflow 只整理已有 PRD 文档，不涉及实现；请验证 test-automation 的 Not Applicable 分支，不要进入开发",
+      "files": [
+        "sandbox/workflow-na/"
+      ],
+      "expected_output": "On a writable initialized fixture, records the Not Applicable decision and reason in automation-test-plan.md and .workflow-state.json, with no fictional AUTO-TASK or implementation stage.",
+      "assertions": [
+        "Output records the explicit no-implementation reason in automation-test-plan.md.",
+        "Output records Test Automation as Not Applicable in .workflow-state.json with the same reason.",
+        "Output does not create fictional automation tasks or enter implementation stages."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "技术方案阶段准备继续，但 automation-test-plan.md 缺失且需求涉及 API 回归风险",
+      "expected_output": "Stops and returns to product:test-automation before technical-solution; does not proceed with a plan that lacks automation evidence."
+    },
+    {
+      "id": 4,
+      "prompt": "$product:workflow 为一个新客户项目跑完整产品工作流，但当前没有 .product-workflow-config.json；请先处理项目初始化门禁",
+      "expected_output": "Stops at the Project Init Config Gate, routes to product:init before clarify, and requests or explains the required docs/product-workflow/project-profile.md and .product-workflow-config.json; does not claim that later stages ran before initialization."
+    },
+    {
+      "id": 5,
+      "prompt": "$product:workflow 继续已有需求，但项目配置 freshness 显示 git commit 已变化；请判断刷新还是明确授权继续",
+      "expected_output": "Recommends product:init --refresh first; if the user explicitly continues, records stale-config continuation, stale-config risk, and extra re-check responsibility in downstream artifacts; records explicit_override only when the user also overrides workflow_policy or project defaults."
+    },
+    {
+      "id": 6,
+      "prompt": "$product:workflow 写一个需求，项目初始化配置里 code_exploration 是 user_declined",
+      "expected_output": "Does not silently inspect source files; uses customer-provided facts and allowed documents only, or asks for explicit permission to change the exploration policy."
+    },
+    {
+      "id": 7,
+      "prompt": "$product:workflow 做一个实现型需求，初始化配置里 test_automation 是 not_applicable",
+      "expected_output": "Inherits the initialization reason for not_applicable test automation unless the user explicitly overrides it; records any override before generating automation scope."
+    },
+    {
+      "id": 8,
+      "prompt": "请生成评审看板。项目根目录已有 project-profile.md 和 .product-workflow-config.json。",
+      "expected_output": "看板不设 Project Profile tab。画像在 docs/product-workflow/project-profile.md，工作流先读配置再跑。看板 tab 是澄清/Wiki/PRD 等阶段。",
+      "assertions": [
+        "不把 project-profile 做成看板 tab。",
+        "说明画像在 docs/product-workflow/project-profile.md。",
+        "看板用阶段 tab（澄清、Wiki、PRD 等），打开壳即可。"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "$product:workflow 做一个新产品想法验证，但目标用户、触发场景和成功指标都缺失",
+      "expected_output": "Infers zero_to_one as the likely product_mode, asks exactly one highest-priority clarification question first, and does not ask target user, trigger scenario, and success metric as separate questions in the same message."
+    },
+    {
+      "id": 10,
+      "prompt": "$product:workflow 为已有生产系统增加一个权限相关功能，配置缺少 workflow_policy.product_mode",
+      "expected_output": "Treats missing product_mode as unknown for compatibility, asks one confirmation question to choose or confirm one_to_n before PRD approval, and does not fail the old config solely because the field is missing."
+    },
+    {
+      "id": 11,
+      "prompt": "$product:prd 继续生成 PRD，但 product_mode 仍是 unknown 且用户未授权按假设继续",
+      "expected_output": "Stops before marking PRD Reviewed, asks one product mode confirmation question, and records that unknown mode blocks PRD approval until confirmed or explicitly accepted as an assumption."
+    },
+    {
+      "id": 12,
+      "prompt": "$product:init --refresh 旧配置已有项目阶段和测试策略，但没有 mode_detection",
+      "expected_output": "Reads the old profile/config, asks only the single highest-priority missing or conflicting question about product mode detection, and does not re-ask the full initialization questionnaire."
+    },
+    {
+      "id": 16,
+      "eval_name": "board_shows_test_automation_tab",
+      "prompt": "切片在 tests/fixtures/board-test-automation/，已有 automation-test-plan.md（Draft），但没有看板。请说明如何让评审人看到自动化测试计划；只读，不要生成或改写夹具里的看板文件。",
+      "files": [
+        "product-workflow/SKILL.md",
+        "product-workflow/references/common-contracts.md",
+        "product-workflow/scripts/render_review_board.mjs",
+        "tests/fixtures/board-test-automation/",
+        "tests/fixtures/eval-protocol.md"
+      ],
+      "expected_output": "Names render_review_board.mjs on this fixture slice. The generated .review-board/index.html uses #test-automation whose body comes from automation-test-plan.md. Does not hand-write HTML, does not copy the plan into another tab, and does not write fixture files in a read-only eval.",
+      "assertions": [
+        "Names render_review_board.mjs (or open_review_board.mjs) on tests/fixtures/board-test-automation instead of editing HTML.",
+        "Points the reviewer to the #test-automation tab in .review-board/index.html.",
+        "Does not paste automation-test-plan.md content into PRD or test-cases tabs.",
+        "Does not write .review-board/ or a slice .gitignore during a read-only eval."
+      ]
+    },
+    {
+      "id": 15,
+      "eval_name": "stage_source_update_must_refresh_board",
+      "prompt": "$product:prd。澄清已经写好，现在写 PRD。写完直接请我批准，先不要进原型。",
+      "files": [
+        "product-prd/SKILL.md",
+        "product-workflow/references/common-contracts.md",
+        "product-workflow/SKILL.md"
+      ],
+      "expected_output": "Writes prd.md and state, then runs render_review_board.mjs so .review-board/index.html exists before asking approval. Does not hand-write HTML. Does not skip the generator.",
+      "assertions": [
+        "Writes prd.md or updates .workflow-state.json.",
+        "Runs render_review_board.mjs after writing sources.",
+        "Does not ask for PRD approval without a generated .review-board/index.html.",
+        "Does not hand-write board HTML."
+      ]
+    },
+    {
+      "id": 14,
+      "eval_name": "upgrade_rebuilds_missing_review_board",
+      "prompt": "刚换成 0.4.2。切片里有 clarify.md 和 prd.md，但没有看板，以前的 index.html 也不见了。请把评审看板找回来。",
+      "files": [
+        "product-workflow/SKILL.md",
+        "product-workflow/references/common-contracts.md"
+      ],
+      "expected_output": "Runs migrate_suite.mjs. Board lives in .review-board/, legacy root shell is moved, state/prototype/charter migrations are applied. Does not hand-write HTML.",
+      "assertions": [
+        "Runs migrate_suite.mjs on the slice or project.",
+        "Puts the board in .review-board/index.html, not the slice root index.html.",
+        "Does not hand-write board HTML."
+      ]
+    },
+    {
+      "id": 17,
+      "eval_name": "task000_waiver_written_to_state_and_board",
+      "prompt": "$product:start-implement。前端测试依赖因私有源不可达暂时装不上；我明确同意先编码，豁免 TASK-000，责任人是李工。请记录豁免并更新评审看板，但不要把测试标成通过。",
+      "files": [
+        "product-kickoff/SKILL.md",
+        "product-workflow/references/common-contracts.md",
+        "product-workflow/scripts/render_review_board.mjs"
+      ],
+      "expected_output": "Writes a top-level waivers[] item in .workflow-state.json with TASK-000, owner, reason, ISO-8601 waived_at, and stage; keeps TASK-000 unfinished and the stage Draft; runs validate_workflow_state.mjs and render_review_board.mjs; the board shows 已豁免 · 未完成 instead of a green status.",
+      "assertions": [
+        "Writes TASK-000, owner, reason, waived_at, and stage to top-level waivers[] in .workflow-state.json.",
+        "Keeps TASK-000 unfinished and does not mark the test or stage Reviewed because of the waiver.",
+        "Runs validate_workflow_state.mjs and render_review_board.mjs after updating state.",
+        "The board badge says 已豁免 · 未完成 and identifies the owner."
+      ]
+    },
+    {
+      "id": 18,
+      "eval_name": "lite_existing_page_batch_download_button",
+      "prompt": "$product:workflow。已有订单列表加一个批量下载按钮，只改当前页面和相邻测试，预计半天。请先推荐合适模式；我确认用 lite。",
+      "files": [
+        "tests/fixtures/lite/batch-download-button/"
+      ],
+      "expected_output": "Selects lite after explicit confirmation; creates only short prd.md, short development-plan.md, develop.md, and .workflow-state.json; uses PRD approval and develop evidence approval as the only two gates.",
+      "assertions": [
+        "Recommends lite with one-module/one-day evidence and records run_mode=lite after confirmation.",
+        "Does not generate clarify.md, project-wiki.md, prototype files, test-cases.md, automation-test-plan.md, technical-solution.md, or start-implement.md.",
+        "Short PRD contains scope, acceptance, verification, non-goals, and cut-stage reasons.",
+        "Development plan stays Draft and does not add an approval gate; develop.md contains fresh verification evidence."
+      ]
+    },
+    {
+      "id": 19,
+      "eval_name": "lite_existing_list_add_field",
+      "prompt": "$product:workflow。采购列表显示后端已有的 supplierName 字段，不改接口和权限，单模块一天内；我确认采用 lite。",
+      "files": [
+        "tests/fixtures/lite/list-extra-field/"
+      ],
+      "expected_output": "Uses lite and the existing four-file shape. Reuses project-level context, keeps cut stages Not Applicable with reasons, and does not produce full-spec documents.",
+      "assertions": [
+        "Writes only prd.md, development-plan.md, develop.md, and .workflow-state.json in the slice.",
+        "Marks every cut stage Not Applicable with a reason in state instead of creating empty files.",
+        "Uses the existing supplierName fact and does not invent a schema or technical solution.",
+        "Requires PRD approval before implementation and user approval of fresh develop evidence at completion."
+      ]
+    },
+    {
+      "id": 20,
+      "eval_name": "lite_single_api_rule_with_required_automation_override",
+      "prompt": "$product:workflow。物料列表接口过滤 disabled=true 的记录，只改一个接口规则。项目默认 test_automation=required，但我明确同意本次 lite 覆盖，风险是没有新增跨层回归，影响扩大时退出 lite 并补自动化计划。",
+      "files": [
+        "tests/fixtures/lite/api-rule/"
+      ],
+      "expected_output": "Uses lite only after recording an explicit workflow_policy.test_automation override with reason, risk, and recovery; keeps automation-test-plan.md absent and test-automation Not Applicable with reason.",
+      "assertions": [
+        "Records the explicit_override for workflow_policy.test_automation with reason, risk, and recovery in state and PRD.",
+        "Does not create automation-test-plan.md or technical-solution.md for the confirmed one-interface change.",
+        "Keeps the short plan Draft and uses only PRD approval plus develop evidence approval.",
+        "Exits lite rather than silently continuing if the impact expands to schema, permissions, cross-repo contract, or architecture."
+      ]
+    },
+    {
+      "id": 21,
+      "eval_name": "bound_slice_uploads_via_limix_requirement",
+      "prompt": "$product:prd 写完短 PRD。切片目录已有 .product-workflow-portal.json。请同步到软件门户。",
+      "files": [
+        "product-prd/SKILL.md",
+        "product-init/references/portal.md",
+        "product-workflow/references/common-contracts.md"
+      ],
+      "expected_output": "Runs limix requirement upload on the bound slice after writing Draft. Does not call limix workflow. Auth or missing-limix failures are explained without deleting local files.",
+      "assertions": [
+        "Runs limix requirement upload against the slice directory.",
+        "Does not invoke limix workflow.",
+        "Does not guess a project when binding is missing; asks or uses the existing portal json.",
+        "Keeps local prd.md if upload fails."
+      ]
+    },
+    {
+      "id": 22,
+      "eval_name": "v060_online_loop_onboard_then_requirement_then_draft_upload",
+      "prompt": "$product:prd。Limix CLI 已安装，portal_sync=bound_project，工作区还没有 .limix/project.json。订单列表加批量下载按钮。写完短 PRD（Draft）后同步到门户。当前切片将落在 docs/product-development/2026-09-07-batch-download/。",
+      "files": [
+        "product-init/references/portal.md",
+        "product-workflow/references/common-contracts.md",
+        "product-prd/SKILL.md",
+        "tests/fixtures/eval-protocol.md"
+      ],
+      "expected_output": "Onboards or binds the portal project first, creates/binds one requirement on that slice directory, writes prd.md as Draft, then runs limix requirement upload on that slice. Does not treat git repos as requirements, does not upload the parent product-development directory, does not mark Reviewed.",
+      "assertions": [
+        "Runs limix project onboard or limix project bind before creating a requirement.",
+        "Runs limix requirement create or bind against the named slice directory, not the repo root.",
+        "Uploads after the PRD is Draft with limix requirement upload on that same slice.",
+        "Does not write Reviewed and does not invent a second requirement for another git repo."
+      ]
+    },
+    {
+      "id": 23,
+      "eval_name": "workflow_user_invoked_not_on_generic_do_requirement",
+      "prompt": "帮我把这个需求做完。项目已经 init 过。",
+      "files": [
+        "product-workflow/SKILL.md",
+        "product-ask/SKILL.md"
+      ],
+      "expected_output": "Does not start $product:workflow. Tells the user to name $product:ask or $product:workflow.",
+      "assertions": [
+        "Does not enter through-run or write stage artifacts for a generic do-the-requirement prompt.",
+        "Names $product:ask or $product:workflow as something the user must type."
+      ]
+    }
+  ]
+}

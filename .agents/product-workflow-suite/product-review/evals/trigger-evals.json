@@ -1,0 +1,30 @@
+[
+  {
+    "query": "$product:review 请人批之前先过一遍",
+    "should_trigger": true
+  },
+  {
+    "query": "PRD 写成 Draft 了，帮我做对抗审查",
+    "should_trigger": true
+  },
+  {
+    "query": "开发计划已是 Draft，帮我做对抗审查",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我写 PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "$product:prd 给后台加一个订单审核页面",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写技术方案",
+    "should_trigger": false
+  },
+  {
+    "query": "$product:ask 我现在该跑哪一步",
+    "should_trigger": false
+  }
+]

@@ -1,0 +1,4 @@
+haitian-pw-0.6.0
+released_at: 2026-09-08
+base: haitian-pw-0.5.0
+note: Ask/连跑人触发、对抗审查、plan/kickoff 短命令、Limix 门户 0.6.1、审查板只写 .review-board；code-wiki 源码在仓、不进安装 zip；安装后必须跑一次 migrate_suite.mjs

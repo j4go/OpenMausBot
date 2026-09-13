@@ -1,0 +1,45 @@
+{
+  "skill_name": "product-test-automation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "$product:test-automation",
+      "expected_output": "Reads project-wiki.md, prd.md, prototype artifacts, test-cases.md, repo wiki context, relevant tests/config/scripts/CI files, then writes automation-test-plan.md with TC-to-layer mapping, target repos, test data, commands, report artifacts, blockers, and AUTO-TASK items."
+    },
+    {
+      "id": 2,
+      "prompt": "当前需求只是整理 PRD 文档，不涉及实现，跑一下 $product:test-automation",
+      "expected_output": "Marks Test Automation as Not Applicable, explains the no-implementation reason, writes the decision to automation-test-plan.md, and records the same decision in the Test Automation tab without inventing automation tasks."
+    },
+    {
+      "id": 3,
+      "prompt": "这些 P0 用例需要真实租户账号和支付沙箱，但我还没给环境信息，生成自动化测试计划",
+      "expected_output": "Marks the stage Blocked or asks for the missing environment/account/data information before planning P0 automation; does not write fictional commands or test data."
+    },
+    {
+      "id": 4,
+      "prompt": "基于已评审的项目 Wiki 和测试用例，为跨前端和后端的支付流程做自动化测试计划",
+      "files": [
+        "sandbox/payment-workflow/project-wiki.md",
+        "sandbox/payment-workflow/prd.md",
+        "sandbox/payment-workflow/test-cases.md",
+        "sandbox/payment-workflow/repo-wikis/frontend/index.md",
+        "sandbox/payment-workflow/repo-wikis/backend/index.md",
+        "sandbox/payment-workflow/source/frontend/package.json",
+        "sandbox/payment-workflow/source/backend/pom.xml"
+      ],
+      "expected_output": "Uses the provided Project Wiki as routing context, reads relevant repo wiki pages, verifies the provided source/config/test commands, and maps TC items to E2E, API, contract, integration, smoke, regression, and manual layers with AUTO-TASK items.",
+      "assertions": [
+        "Output identifies Project Wiki as the routing source and names the relevant frontend/backend repositories.",
+        "Output records the repo wiki pages read and separates wiki navigation facts from source/config-verified facts.",
+        "Output maps each P0/P1 TC-xxx to one or more automation layers or gives a concrete manual/blocker reason.",
+        "Output defines AUTO-TASK-xxx items with target repo, entry point, command, and evidence artifact."
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "test-cases.md 没有 AC 到 TC 的映射，继续生成 automation-test-plan.md",
+      "expected_output": "Stops and returns to product:test-cases because the automation stage requires traceable AC-to-TC mapping."
+    }
+  ]
+}

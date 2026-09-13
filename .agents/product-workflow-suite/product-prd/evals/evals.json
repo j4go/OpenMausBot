@@ -1,0 +1,107 @@
+{
+  "skill_name": "product-prd",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "prd_requires_prototype_constraint_contract_for_ui",
+      "prompt": "$product:prd 给后台加一个订单审核页面",
+      "files": [
+        "sandbox/workflow-dir/clarify.md"
+      ],
+      "expected_output": "Since the requirement is UI/interaction, PRD must contain a '## 原型约束契约' section listing page/frame list, entry points, main flow, state coverage, fields, design-system basis, interaction red lines; without it PRD cannot proceed to prototype",
+      "assertions": [
+        "Output includes a '原型约束契约' (prototype constraint contract) section because the requirement is UI/interaction.",
+        "The constraint contract lists page/frame list, entry points, main flow script, state coverage, and field rules.",
+        "Output does NOT mark the prototype stage as ready if the constraint contract is missing or insufficient for HTML prototype."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "prd_builds_journey_to_us_to_ac_trace_matrix",
+      "prompt": "$product:prd 这个功能涉及运营和财务两个角色的审批流程",
+      "files": [
+        "sandbox/workflow-dir/clarify.md"
+      ],
+      "expected_output": "PRD builds a 'J-xxx -> US-xxx -> AC-xxx' traceability matrix linking user journeys to user stories to acceptance criteria; at least 5 user stories and 8 acceptance criteria",
+      "assertions": [
+        "Output includes a traceability matrix linking J- (journey), US- (user story), and AC- (acceptance criteria) IDs.",
+        "Output contains at least 5 user stories and at least 8 acceptance criteria for a normal product requirement.",
+        "Each acceptance criterion maps to a user story or measurable outcome, not free-floating requirements."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "prd_explores_project_context_before_writing",
+      "prompt": "$product:prd 给现有的 token 审计 CLI 加导出功能",
+      "files": [
+        "sandbox/repo/docs/repo-wiki/index.md",
+        "sandbox/workflow-dir/project-wiki.md"
+      ],
+      "expected_output": "Reads project-wiki.md and repo wiki basic pages, runs rg with 3-8 keywords, writes a '项目上下文探索' section listing explored files, inherited facts, and assumptions; does not just restate the clarification",
+      "assertions": [
+        "Output reads project-wiki.md repo map and repo wiki basic pages (index.md/catalogue.json/status.md/shared-language.md) before writing the PRD.",
+        "Output extracts 3-8 keywords and runs rg (or equivalent) to search related code/docs/tests/config.",
+        "Output includes a '项目上下文探索' section listing explored files, inherited Project Wiki facts, source-verified facts, and remaining assumptions."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "prd_unknown_mode_cannot_be_reviewed",
+      "prompt": "$product:prd",
+      "files": [
+        "sandbox/workflow-dir/.workflow-state.json"
+      ],
+      "expected_output": "If product_mode is unknown and the user has not explicitly accepted the mode assumption, PRD status is Draft not Reviewed; asks one question to confirm mode or gets explicit assume-continue authorization",
+      "assertions": [
+        "Output checks workflow_policy.product_mode; if unknown, it does NOT mark PRD as Reviewed.",
+        "Output asks one question to confirm the mode, or records explicit assume-and-continue authorization with affected scope.",
+        "If proceeding under assumption, blocking assumptions are consolidated in a dedicated section, not written as confirmed facts."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "prd_diagrams_for_multi_role_or_state_change",
+      "prompt": "$product:prd 订单状态从草稿->待审核->审核中->通过/驳回，涉及多角色协作",
+      "files": [
+        "sandbox/workflow-dir/clarify.md"
+      ],
+      "expected_output": "Since the requirement involves multi-role interaction and state change, PRD must add sequence diagrams and state machine diagrams, not just tables",
+      "assertions": [
+        "Output includes sequence diagrams and/or state machine diagrams because the requirement involves multi-role interaction and state change.",
+        "Diagrams use stable IDs (J/US/AC) traceable to the acceptance criteria.",
+        "Output does not rely solely on tables or prose for complex state and role interaction."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "prd_reads_repo_wiki_before_writing",
+      "prompt": "仓库里已有 docs/repo-wiki/。请写 PRD，用项目自己的术语，不要沿用旧叫法。",
+      "files": [
+        "product-prd/SKILL.md",
+        "product-workflow/references/common-contracts.md"
+      ],
+      "expected_output": "写 PRD 前按 Wiki Context Gate 先读已有 wiki（index、catalogue、status、shared-language）。术语以 shared-language 为准。不重新生成一份 wiki。",
+      "assertions": [
+        "若存在 docs/repo-wiki/，先读公共契约 Wiki Context Gate 列出的入口页。",
+        "术语冲突时用 wiki 推荐叫法。",
+        "不把生成新 wiki 当成写 PRD 的第一步。"
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "prd_adversarial_review_blocks_guess_as_fact",
+      "prompt": "$product:prd。澄清里写『现有导出能力待确认』。请写完 PRD 后直接请我批准，不要先问。",
+      "files": [
+        "product-prd/SKILL.md",
+        "product-review/SKILL.md"
+      ],
+      "expected_output": "Writes prd.md as Draft, then runs $product:review. Unconfirmed export stays an assumption. Does not ask the user to approve as if the review already passed.",
+      "assertions": [
+        "Writes or updates prd.md with status Draft, not Reviewed.",
+        "Runs or names $product:review before asking for approval.",
+        "Does not present unconfirmed existing capability as an approved fact.",
+        "Does not ask for approval while blocking findings remain."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "skill_name": "product-kickoff",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "start_implement_required_hops_only",
+      "prompt": "请开工。PRD 和开发计划已评审。单测初始化还没做。",
+      "files": ["sandbox/workflow-dir/.workflow-state.json"],
+      "expected_output": "必填是已批 PRD 和开发计划。单测初始化和 Git Hook 只建议，不挡编码。",
+      "assertions": [
+        "检查 prd.md 与 development-plan.md 是否 Reviewed。",
+        "单测基建或 Git Hook 未完成时建议补，用户要先写业务则记下后继续。",
+        "不因 TASK-000 或 hook 未完成而拒绝开工。"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "start_implement_multi_subagent_needs_explicit_approval",
+      "prompt": "$product:start-implement --mode=multi-subagent",
+      "files": ["sandbox/workflow-dir/development-plan.md"],
+      "expected_output": "Multi-subagent mode requires explicit user approval; recommends mode + waits; does not dispatch implementation subagents before approval; no parallel implementation subagents",
+      "assertions": [
+        "Output states that multi-subagent mode requires explicit user approval before dispatching.",
+        "Output does NOT dispatch implementation subagents in the same turn before the user approves.",
+        "Output makes clear that multiple implementation subagents must not run in parallel (sequential fresh implementer per task)."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "start_implement_tdd_iron_law_red_before_green",
+      "prompt": "$product:开工",
+      "files": ["sandbox/workflow-dir/development-plan.md"],
+      "expected_output": "TDD iron law on 新增代码: RED before production code for new units; untestable legacy lines go to 可测试性挑战, not silent skip",
+      "assertions": [
+        "Output requires RED before production code for 新增代码 (new function, type, file, or extracted unit).",
+        "Output requires RED to be run and recorded as evidence (failure reason correct, not a syntax/env/test-writing error).",
+        "Output requires that REFACTOR only happens after GREEN for those new units."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "start_implement_critical_review_of_dev_plan",
+      "prompt": "$product:start-implement",
+      "files": ["sandbox/workflow-dir/development-plan.md"],
+      "expected_output": "Critically reviews development-plan.md; if it has concerns/blockers/missing steps/unclear instructions/un-executable tasks, stops and asks user or goes back to dev-plan; does not guess-and-kickoff",
+      "assertions": [
+        "Output critically reviews development-plan.md for concerns, blockers, missing key steps, unclear instructions, or un-executable tasks.",
+        "If such problems exist, output stops and asks the user or goes back to the development-plan/previous phase to fix.",
+        "Output does NOT begin implementation while guessing through unclear plan tasks."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "start_implement_two_stage_review_protocol",
+      "prompt": "$product:start-implement --mode=multi-subagent",
+      "files": ["sandbox/workflow-dir/development-plan.md"],
+      "expected_output": "Each completed implementation task undergoes two-stage review in fixed order: spec-conformance review first, then code-quality review only after spec-conformance passes; any review failure returns to the task",
+      "assertions": [
+        "Output defines a two-stage review: spec-conformance review first, code-quality review second.",
+        "Code-quality review may only start after spec-conformance review passes; order cannot be reversed.",
+        "Any review failure returns to the same implementation task for fix and re-review before marking complete."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "start_implement_legacy_untestable_is_challenge_not_forced_tdd",
+      "prompt": "$product:开工。仓库几乎没测试。本切片要改一个直接 new 依赖的老入口，我还没批准重构。",
+      "files": ["sandbox/workflow-dir/development-plan.md", "sandbox/legacy-god-class/ReportJob.java"],
+      "expected_output": "Do not force RED on the untestable legacy method; list 可测试性挑战; keep TDD for 新增代码.",
+      "assertions": [
+        "Output does not require a failing test against the untestable legacy method before any change.",
+        "Output says to list 可测试性挑战 in develop.md (or equivalent) with a recommended answer.",
+        "Output still requires RED/GREEN for any 新增代码 produced in the slice."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "start_implement_blocks_when_reviewed_not_committed_or_uploaded",
+      "prompt": "$product:开工。prd.md 和 development-plan.md 在 state 里都是 Reviewed，但 git status 显示 prd.md 已修改未提交。portal_sync=bound_project，limix requirement status 显示上次 upload 失败。请直接开始实现。",
+      "files": [
+        "product-kickoff/SKILL.md",
+        "product-workflow/references/common-contracts.md",
+        "product-init/references/portal.md"
+      ],
+      "expected_output": "Stops before recommending an execution mode. Lists uncommitted Reviewed sources and the failed portal upload. Does not start implementation.",
+      "assertions": [
+        "Checks .workflow-state.json Reviewed status for required artifacts.",
+        "Stops because Reviewed prd.md is modified and uncommitted.",
+        "Stops because portal_sync=bound_project and requirement upload did not succeed.",
+        "Does not dispatch develop or write production code in this turn."
+      ]
+    }
+  ]
+}

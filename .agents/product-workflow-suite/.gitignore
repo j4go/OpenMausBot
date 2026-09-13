@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+coverage/
+.nyc_output/
+*.log
+evals/logs/
+evals/reports/
+evals/room/
+evals/agent-runs/**/outputs/
+sandbox/**/index.html
+sandbox/**/mermaid.min.js
+sandbox/**/review-board-live.js
+sandbox/**/.review-board/

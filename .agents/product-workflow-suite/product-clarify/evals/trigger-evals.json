@@ -1,0 +1,19 @@
+[
+  {"query": "$product:clarify 帮我理清这个需求", "should_trigger": true},
+  {"query": "这个功能我不确定目标用户是谁，先帮我把问题澄清一下", "should_trigger": true},
+  {"query": "在写 PRD 之前先澄清一下产品问题", "should_trigger": true},
+  {"query": "帮我做需求澄清，把目标用户和场景梳理出来", "should_trigger": true},
+  {"query": "这个需求信息不全，先别写 PRD，先澄清", "should_trigger": true},
+  {"query": "帮我把这个模糊的想法拆成可澄清的产品问题", "should_trigger": true},
+  {"query": "我们想做一个新平台，但成功指标还没定，帮我理一理", "should_trigger": true},
+  {"query": "现有系统要加个模块，先帮我澄清影响范围和回归风险", "should_trigger": true},
+
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false},
+  {"query": "帮我初始化 product workflow 项目配置", "should_trigger": false},
+  {"query": "帮我写技术方案", "should_trigger": false},
+  {"query": "给这段代码写个单测用例", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "帮我做一个 Stitch 原型", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false}
+]

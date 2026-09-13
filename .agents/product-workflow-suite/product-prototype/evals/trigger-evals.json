@@ -1,0 +1,58 @@
+[
+  {
+    "query": "$product:prototype 帮我做 HTML 原型",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我根据 PRD 做一个可交互的原型",
+    "should_trigger": true
+  },
+  {
+    "query": "把原型约束契约落地成 HTML 原型",
+    "should_trigger": true
+  },
+  {
+    "query": "这个页面做一个自包含的可点击原型",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我做一个订单审核页面的原型",
+    "should_trigger": true
+  },
+  {
+    "query": "原型要覆盖默认/空/错误/成功几种状态",
+    "should_trigger": true
+  },
+  {
+    "query": "CLI 功能也要做个可交互的原型演示",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我修订一下 prototype.html",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我做一个 Stitch 原型",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写 PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写测试用例",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我配置 Git Hook",
+    "should_trigger": false
+  },
+  {
+    "query": "初始化单测环境",
+    "should_trigger": false
+  },
+  {
+    "query": "给这段代码写个单测用例",
+    "should_trigger": false
+  }
+]

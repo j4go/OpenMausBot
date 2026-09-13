@@ -1,0 +1,35 @@
+{
+  "skill_name": "repo-wiki",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "请为当前仓库生成一个 repo wiki，让后续产品和开发任务能先读它再继续。",
+      "expected_output": "在 docs/repo-wiki/ 下生成 index.md、index.html、catalogue.json、repo-map、architecture、modules、workflows、contracts、shared-language、boundaries-and-red-flags、verification-gates、setup-and-testing、onboarding、codemaps 和 _meta/status 等内容；index.html 是自包含单页可点击索引，链接 Catalogue、Repo Map、Architecture、Modules、Workflows、Contracts、Shared Language、Boundaries and Red Flags、Verification Gates、Setup and Testing、Decisions and Gotchas、Open Questions、onboarding 和存在的 codemaps；记录源码 commit 或非 git 状态。"
+    },
+    {
+      "id": 2,
+      "prompt": "先查 repo wiki，再告诉我这个项目的启动入口和测试入口在哪里。",
+      "expected_output": "如果 docs/repo-wiki/ 存在，先读取 docs/repo-wiki/index.md、catalogue.json、_meta/status.md、shared-language.md 和相关页面；如果 wiki 缺失、过期或未覆盖启动/测试入口，回查源码并明确说明依据的 wiki 页面、源码路径和缺口证据。"
+    },
+    {
+      "id": 3,
+      "prompt": "我改了接口和测试命令，刷新一下 repo wiki。",
+      "expected_output": "识别变化范围，只刷新 contracts、setup-and-testing、_meta/status、index.html 等受影响页面，不无关重写全部文档；刷新任一 Markdown/JSON wiki 页面后同步更新 docs/repo-wiki/index.html；如果 wiki 缺失、过期或未覆盖改动区域，回查源码/配置并说明依据。"
+    },
+    {
+      "id": 4,
+      "prompt": "基于 repo wiki 给新后端开发做一个 code tour，重点讲请求入口到数据层。",
+      "expected_output": "先读取 docs/repo-wiki/index.md、catalogue.json 和相关 codemaps，再生成 .tours/new-joiner-*.tour；每一步锚定真实文件、目录、行号、选择区间或 pattern，不生成平铺文件清单。"
+    },
+    {
+      "id": 5,
+      "prompt": "repo wiki 已经有了。后续写 PRD、技术方案时要不要再生成一份 wiki？",
+      "expected_output": "不重复生成。下游阶段按公共契约 Wiki Context Gate 去读已有 wiki。写 PRD 的读法见 product-prd；写技术方案的读法见 product-technical-solution。"
+    },
+    {
+      "id": 7,
+      "prompt": "根据 repo wiki 写开发计划，要把验证命令落到任务里。这是不是 repo-wiki skill 的活？",
+      "expected_output": "不是。repo-wiki 负责生成和刷新 wiki。开发计划怎么读 wiki、怎么写任务，走 product-development-plan。"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+[
+  {"query": "帮我看看这段老代码，重构一下让它能加测试", "should_trigger": true},
+  {"query": "遗留仓没测试，本切片新增折扣函数，先抽出再写单测", "should_trigger": true},
+  {"query": "给 UserProfileService.kt 补充一下单元测试", "should_trigger": true},
+  {"query": "这段 LoginViewModel 的业务逻辑有没有 bug？顺便写个用例验证一下", "should_trigger": true},
+  {"query": "帮我检查一下 test_calc.py，感觉写得很乱，不符合规范", "should_trigger": true},
+  {"query": "为这个接口新增一个异常情况的断言测试", "should_trigger": true},
+  {"query": "我刚改了几个边界值，帮我把原有的单测更新一下", "should_trigger": true},
+  {"query": "如何用 MockK 模拟这个依赖？给我写个完整的 Kotlin 测试文件", "should_trigger": true},
+  {"query": "按照 AAA 测试规范，帮我输出一版这段代码的测试", "should_trigger": true},
+  {"query": "把这段代码转成表驱动测试的形式", "should_trigger": true},
+  {"query": "帮我测一下 utils.ts 里的格式化函数", "should_trigger": true},
+
+  {"query": "帮我配置一下项目的单测环境，现在连 junit 都生成不了", "should_trigger": false},
+  {"query": "怎么配置 git pre-push 检查来拦截低覆盖率的代码？", "should_trigger": false},
+  {"query": "解释一下这段 C++ 代码是什么意思", "should_trigger": false},
+  {"query": "用 Python 写一个计算器类，包含加减乘除功能", "should_trigger": false},
+  {"query": "帮我把这个 Java 接口文档写一下", "should_trigger": false},
+  {"query": "为什么我的 xcodebuild 编译报错了？帮我看看日志", "should_trigger": false},
+  {"query": "给我写一个前端的 Vue 组件用来展示用户列表", "should_trigger": false},
+  {"query": "如何用 Docker 部署这个 Go 项目？", "should_trigger": false},
+  {"query": "帮我在 database 里写一条 SQL 查询用户的权限", "should_trigger": false},
+  {"query": "给我介绍一下什么是敏捷开发中的 TDD", "should_trigger": false}
+]

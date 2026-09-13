@@ -1,0 +1,80 @@
+{
+  "workflowType": "product_workflow",
+  "manifestVersion": "2026.05.19",
+  "parserVersion": "2026.05.19",
+  "phases": [
+    {
+      "key": "product_definition",
+      "label": "Product Definition",
+      "stages": ["clarification", "prd", "prototype"]
+    },
+    {
+      "key": "design_implementation",
+      "label": "Design and Implementation",
+      "stages": ["api_contract", "technical_solution", "development_plan"]
+    },
+    {
+      "key": "verification_delivery",
+      "label": "Verification and Delivery",
+      "stages": ["test_cases", "review_board"]
+    }
+  ],
+  "artifacts": [
+    {
+      "artifactKey": "clarification",
+      "label": "Clarification",
+      "sourceFiles": ["clarify.md", "clarification.md"],
+      "required": true,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "prd",
+      "label": "PRD",
+      "sourceFiles": ["prd.md"],
+      "required": true,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "prototype",
+      "label": "Prototype and Design Review",
+      "sourceFiles": ["prototype.html", "design-review.md"],
+      "required": false,
+      "contentType": "text/html"
+    },
+    {
+      "artifactKey": "api_contract",
+      "label": "API Contract",
+      "sourceFiles": ["api-contract.md", "technical-solution.md"],
+      "required": false,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "technical_solution",
+      "label": "Technical Solution",
+      "sourceFiles": ["technical-solution.md"],
+      "required": true,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "development_plan",
+      "label": "Development Plan",
+      "sourceFiles": ["development-plan.md"],
+      "required": true,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "test_cases",
+      "label": "Test Cases",
+      "sourceFiles": ["test-cases.md"],
+      "required": true,
+      "contentType": "text/markdown"
+    },
+    {
+      "artifactKey": "review_board",
+      "label": "Review Board",
+      "sourceFiles": ["review-board.md"],
+      "required": false,
+      "contentType": "text/markdown"
+    }
+  ]
+}

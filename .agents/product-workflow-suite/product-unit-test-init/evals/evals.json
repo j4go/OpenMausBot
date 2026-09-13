@@ -1,0 +1,146 @@
+{
+    "skill_name": "product-unit-test-init",
+    "evals": [
+      {
+        "id": 1,
+        "eval_name": "init_ios_spm_project",
+        "prompt": "我有一个纯 Swift 的库（没有 xcodeproj），完全没有配置过测试。帮我初始化一下环境，以便输出 `reports/coverage.xml` 和 JUnit XML 测试报告。",
+        "files": [
+          "sandbox/ios-spm-sandbox/Package.swift"
+        ],
+        "expected_output": "init_test_env.sh using swift test with coverage flags, xcbeautify for JUnit XML, and xccov/slather for reports/coverage.xml",
+        "assertions": [
+          "Output identifies the project as Swift Package Manager (SPM) based on `Package.swift` (no `xcodeproj` or Xcode workspace).",
+          "Output configures test execution using `swift test` with code coverage enabled (`--enable-code-coverage`).",
+          "Output produces or configures JUnit XML output (via `xcbeautify`, `xctestrun`, or similar tool).",
+          "Output configures coverage report output path to `reports/coverage.xml` (under `reports/` subdirectory, not root)."
+        ]
+      },
+      {
+        "id": 2,
+        "eval_name": "init_python_project",
+        "prompt": "在这个 Python 项目里初始化单测环境和覆盖率报告。",
+        "files": [
+          "sandbox/python-sandbox/requirements.txt"
+        ],
+        "expected_output": "pytest config with JUnit XML and coverage XML under reports/",
+        "assertions": [
+          "Output configures pytest to produce JUnit XML test results (via --junitxml, junit_xml in pytest.ini, or addopts).",
+          "Output configures coverage report output path to reports/coverage.xml (not root coverage.xml).",
+          "Output includes .gitignore entry to exclude the reports/ directory."
+        ]
+      },
+      {
+        "id": 3,
+        "eval_name": "init_java_maven_project",
+        "prompt": "在这个标准的 Java Maven 项目里初始化测试环境。",
+        "files": [
+          "sandbox/java-sandbox/pom.xml"
+        ],
+        "expected_output": "pom.xml with JaCoCo plugin and jacoco2cobertura.py for reports/coverage.xml",
+        "assertions": [
+          "Output configures `jacoco-maven-plugin` for coverage in `pom.xml`.",
+          "Output provides a conversion step to produce `reports/coverage.xml` in Cobertura format (via `jacoco2cobertura.py` or equivalent script).",
+          "Output does NOT run `pip install jacoco-to-cobertura` (the nonexistent pip package)."
+        ]
+      },
+      {
+        "id": 4,
+        "eval_name": "init_typescript_jest_project",
+        "prompt": "给这个 TypeScript 项目初始化单测环境，要求能输出 `junit.xml` 和 `reports/coverage.xml`。",
+        "files": [
+          "sandbox/ts-jest-sandbox/package.json",
+          "sandbox/ts-jest-sandbox/tsconfig.json"
+        ],
+        "expected_output": "Jest or ts-jest setup with junit.xml and reports/coverage.xml output",
+        "assertions": [
+          "Output configures a TypeScript-compatible Jest setup such as `ts-jest` or an equivalent existing stack.",
+          "Output configures JUnit XML output generation.",
+          "Output configures coverage output to `reports/coverage.xml` rather than a root-level file.",
+          "Output includes a `.gitignore` entry to exclude the `reports/` directory from version control."
+        ]
+      },
+      {
+        "id": 5,
+        "eval_name": "kmp_kover_init",
+        "prompt": "我有一个 Kotlin Multiplatform (KMP) 项目，用 Kover 做覆盖率。帮我初始化单测环境，需要能输出 JUnit XML 和 Cobertura 格式的覆盖率报告。",
+        "files": [
+          "sandbox/kmp-sandbox/build.gradle.kts",
+          "sandbox/kmp-sandbox/settings.gradle.kts"
+        ],
+        "expected_output": "Kover plugin config, koverXmlReport task, jacoco2cobertura.py conversion to reports/coverage.xml",
+        "assertions": [
+          "Output configures the Kover plugin (org.jetbrains.kotlinx.kover) in the Gradle build file.",
+          "Output includes a Gradle task to generate Kover XML report (koverXmlReport or koverReport).",
+          "Output uses jacoco2cobertura.py (bundled script) to convert the Kover XML to Cobertura format — NOT the pip package jacoco-to-cobertura.",
+          "Output configures the final Cobertura XML output path to reports/coverage.xml.",
+          "Output does NOT contain pip install jacoco-to-cobertura."
+        ]
+      },
+      {
+        "id": 6,
+        "eval_name": "java_gradle_jacoco_init",
+        "prompt": "在这个 Java Gradle 项目里初始化单测环境，要求能输出 Cobertura 格式的覆盖率报告供覆盖率检查使用。",
+        "files": [
+          "sandbox/java-gradle-sandbox/build.gradle",
+          "sandbox/java-gradle-sandbox/settings.gradle"
+        ],
+        "expected_output": "JaCoCo plugin in build.gradle, jacocoTestReport task, jacoco2cobertura.py to reports/coverage.xml",
+        "assertions": [
+          "Output configures JaCoCo plugin in build.gradle (apply plugin jacoco or plugins block).",
+          "Output includes jacocoTestReport Gradle task configuration.",
+          "Output uses jacoco2cobertura.py (bundled script) to convert JaCoCo XML to Cobertura format.",
+          "Output configures the final Cobertura XML output path to reports/coverage.xml.",
+          "Output does NOT contain pip install jacoco-to-cobertura."
+        ]
+      },
+      {
+        "id": 7,
+        "eval_name": "javascript_esm_jest_transform_repair",
+        "prompt": "这个老 Nuxt/Vue 项目是 ESM 代码，Jest 一跑就报 Cannot use import statement outside a module。请初始化或修复单测环境，并保证还能输出 junit.xml 和 reports/coverage.xml。",
+        "files": [
+          "sandbox/js-esm-sandbox/package.json",
+          "sandbox/js-esm-sandbox/src/api/user.js"
+        ],
+        "expected_output": "Jest setup uses jest.config.cjs plus babel-jest/@babel/preset-env transform and stable report normalization.",
+        "assertions": [
+          "Output diagnoses the ESM/Jest transform issue instead of only adding a basic Jest config.",
+          "Output proposes `babel-jest`, `@babel/core`, and `@babel/preset-env` or an equivalent existing transform.",
+          "Output uses `jest.config.cjs` or otherwise handles package type module safely.",
+          "Output still configures JUnit XML and reports/coverage.xml."
+        ]
+      },
+      {
+        "id": 8,
+        "eval_name": "javascript_cobertura_filename_normalization",
+        "prompt": "这个前端项目的 Vitest 会生成 cobertura-coverage.xml，而另一个 Jest 项目生成 coverage-cobertura.xml。请给出统一的覆盖率报告归一化方案。",
+        "files": [
+          "sandbox/frontend/package.json",
+          "sandbox/frontend/vitest.config.ts"
+        ],
+        "expected_output": "Normalize both cobertura-coverage.xml and coverage-cobertura.xml into reports/coverage.xml and distinguish quick test from coverage gate.",
+        "assertions": [
+          "Output handles both `cobertura-coverage.xml` and `coverage-cobertura.xml`.",
+          "Output normalizes the final path to `reports/coverage.xml`.",
+          "Output distinguishes a quick no-coverage local test command from the full `test:coverage` gate command."
+        ]
+      },
+      {
+        "id": 9,
+        "eval_name": "go_test_infra_init",
+        "prompt": "这是一个 Go 服务，只有 go.mod，还没有 JUnit XML 和 Cobertura XML 报告。请初始化单测和覆盖率报告流程，后续要接入 Git Hook。",
+        "files": [
+          "sandbox/go-sandbox/go.mod",
+          "sandbox/go-sandbox/internal/service/user.go"
+        ],
+        "expected_output": "init_test_env.sh uses go test -json, go-junit-report, coverage.out, and gocover-cobertura to create junit.xml and reports/coverage.xml.",
+        "assertions": [
+          "Output uses `go test ./... -covermode=count -coverprofile=reports/coverage.out -json`.",
+          "Output ensures `$(go env GOPATH)/bin` is on PATH before invoking installed converter binaries.",
+          "Output converts Go JSON test output with `go-junit-report -parser gojson` into `junit.xml`.",
+          "Output converts `reports/coverage.out` with `gocover-cobertura` into `reports/coverage.xml`.",
+          "Output does not claim standard `go test` directly emits JUnit or Cobertura XML."
+        ]
+      }
+    ]
+  }

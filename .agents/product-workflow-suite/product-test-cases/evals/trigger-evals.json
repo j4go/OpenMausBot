@@ -1,0 +1,19 @@
+[
+  {"query": "$product:test-cases 帮我写测试用例", "should_trigger": true},
+  {"query": "帮我把验收标准转成 P0/P1/P2 测试用例", "should_trigger": true},
+  {"query": "这个功能要覆盖边界、错误、权限场景的用例", "should_trigger": true},
+  {"query": "帮我补充测试用例的自动化建议", "should_trigger": true},
+  {"query": "每条 AC 都要至少映射到一条测试用例", "should_trigger": true},
+  {"query": "帮我梳理项目测试上下文和可复用模式", "should_trigger": true},
+  {"query": "验收标准太模糊，先帮我确认能不能测", "should_trigger": true},
+  {"query": "帮我修订 test-cases.md", "should_trigger": true},
+
+  {"query": "帮我写自动化测试计划", "should_trigger": false},
+  {"query": "给这段代码写个单测用例", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false},
+  {"query": "帮我开工实现", "should_trigger": false},
+  {"query": "帮我写开发计划", "should_trigger": false}
+]

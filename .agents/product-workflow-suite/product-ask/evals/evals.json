@@ -1,0 +1,29 @@
+{
+  "skill_name": "product-ask",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "ask_routes_empty_dir_to_init",
+      "prompt": "$product:ask。这是空文件夹，我要开始做一个需求。",
+      "files": ["product-ask/SKILL.md"],
+      "expected_output": "Tells the user to run $product:init. Does not itself run the full workflow.",
+      "assertions": [
+        "Names $product:init as the next command.",
+        "Does not start $product:workflow in this turn.",
+        "Does not generate prd.md."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "ask_does_not_auto_through_run",
+      "prompt": "帮我把这个需求做完。",
+      "files": ["product-ask/SKILL.md", "product-workflow/SKILL.md"],
+      "expected_output": "Because ask and workflow are user-invoked, a generic 'do the requirement' does not enter $product:workflow. Ask lists candidates; workflow only runs when named.",
+      "assertions": [
+        "Does not treat the prompt as authorization to run $product:workflow.",
+        "If answering via ask, lists $product:workflow as something the user must name.",
+        "Does not write a full-slice stage sequence as if through-run already started."
+      ]
+    }
+  ]
+}

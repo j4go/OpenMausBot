@@ -1,0 +1,19 @@
+[
+  {"query": "$product:technical-solution 帮我写技术方案", "should_trigger": true},
+  {"query": "帮我把 PRD 转成技术方案和架构设计", "should_trigger": true},
+  {"query": "写一下接口设计、数据模型和状态流转", "should_trigger": true},
+  {"query": "帮我补技术方案的回滚和发布策略", "should_trigger": true},
+  {"query": "这个需求要出技术方案，涉及数据库迁移", "should_trigger": true},
+  {"query": "帮我检查一下技术方案里的单元测试基建现状", "should_trigger": true},
+  {"query": "技术方案里要体现 Git Hook 质量门禁现状", "should_trigger": true},
+  {"query": "帮我生成技术方案的 ER 图和 API 汇总表", "should_trigger": true},
+
+  {"query": "帮我写开发计划", "should_trigger": false},
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我写测试用例", "should_trigger": false},
+  {"query": "帮我开工实现", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "给这段代码写个单测用例", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false}
+]

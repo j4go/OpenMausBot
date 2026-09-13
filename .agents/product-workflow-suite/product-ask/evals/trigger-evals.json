@@ -1,0 +1,22 @@
+[
+  {
+    "query": "$product:ask 我现在该跑哪一步",
+    "should_trigger": true
+  },
+  {
+    "query": "现在该用哪条产品工作流",
+    "should_trigger": true
+  },
+  {
+    "query": "$product:workflow 一次跑完支付流程",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我写 PRD",
+    "should_trigger": false
+  },
+  {
+    "query": "帮我把这个需求做完",
+    "should_trigger": false
+  }
+]

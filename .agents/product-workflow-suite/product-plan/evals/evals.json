@@ -1,0 +1,81 @@
+{
+  "skill_name": "product-plan",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "dev_plan_integrates_auto_tasks",
+      "prompt": "$product:development-plan",
+      "files": ["sandbox/workflow-dir/automation-test-plan.md", "sandbox/workflow-dir/technical-solution.md"],
+      "expected_output": "Reads automation-test-plan.md; every AUTO-TASK-xxx becomes an executable dev task with target repo, TC dependency, automation layer, test data/fixture/mock, local+CI commands, report evidence; not 'deferred'",
+      "assertions": [
+        "Output reads automation-test-plan.md and incorporates every AUTO-TASK-xxx into the implementation sequence.",
+        "Each AUTO-TASK converted task includes target repo/package, dependent TC-xxx, automation layer, local + CI verification commands, and report evidence.",
+        "Output does NOT write any AUTO-TASK as 'to be added later' / 'deferred' without an explicit external blocker reason."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "dev_plan_unit_test_init_suggested",
+      "prompt": "请写开发计划。技术方案里写了缺少可跑的单测命令。",
+      "files": ["sandbox/workflow-dir/technical-solution.md"],
+      "expected_output": "计划里建议加上 product-unit-test-init 任务（可标 TASK-000），写清栈和用户怎么跑。不写「未完成不得编码」。",
+      "assertions": [
+        "读取技术方案里的单测基建现状。",
+        "若有缺口，建议写入 product-unit-test-init 任务和用户可跑的脚本。",
+        "不把该任务写成硬挡：用户要先写业务时可以继续，任务保持未完成。"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "dev_plan_git_hook_suggested",
+      "prompt": "请写开发计划。技术方案里提到需要配 Git Hook。",
+      "files": ["sandbox/workflow-dir/technical-solution.md"],
+      "expected_output": "计划里建议加上 product-git-hook-init 诊断和验证命令。不挡开工。",
+      "assertions": [
+        "读取技术方案里的 Git Hook 现状。",
+        "若提到 hook，建议写入 product-git-hook-init。",
+        "不写「hook 未完成不得进入功能实现」。"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "dev_plan_tdd_checkpoints_per_task",
+      "prompt": "$product:development-plan",
+      "files": ["sandbox/plan-complete/technical-solution.md", "sandbox/plan-complete/test-cases.md", "sandbox/plan-complete/automation-test-plan.md"],
+      "expected_output": "Each ordered task has file scope, TDD checkpoint (failing test -> expected failure -> implementation -> passing test), verification commands, expected evidence, dependencies, ownership boundaries, and no-parallel implementation rules",
+      "assertions": [
+        "Every task has a file/module scope, ownership boundary, and verification command.",
+        "Every task has a TDD checkpoint mapped to TC-xxx (failing test first, then implementation).",
+        "Output states dependency ordering, ownership boundaries, and no-parallel implementation rules between tasks."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "dev_plan_verification_commands_readable",
+      "prompt": "$product:development-plan",
+      "files": ["sandbox/workflow-dir/technical-solution.md"],
+      "expected_output": "In the human review view, verification commands are split into readable components (purpose, execution location, command, expected evidence), not dumped in a single dark pre block; each command adjacent to its task/TC",
+      "assertions": [
+        "Human review view does NOT dump 3+ commands in a single <pre><code> block.",
+        "Verification commands show purpose, execution location (repo root / package dir), the command, and expected evidence (pass condition / blocking gate).",
+        "Each verification command is adjacent to its corresponding task or TC ID."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "dev_plan_adversarial_review_blocks_missing_verification",
+      "prompt": "$product:development-plan。计划里有 TASK-002『顺手重构订单模块』，没有验证命令。请写完后直接请我批准开工。",
+      "files": [
+        "product-plan/SKILL.md",
+        "product-review/SKILL.md"
+      ],
+      "expected_output": "Keeps the plan Draft, records 规格 and 可判定 findings for the extra refactor and missing verification command, and does not ask for approval or enter implementation.",
+      "assertions": [
+        "Writes 对抗审查 into development-plan.md.",
+        "Flags the extra refactor as out of current PRD/AC scope.",
+        "Flags the missing verification command as blocking.",
+        "Does not mark the plan Reviewed or start implement."
+      ]
+    }
+  ]
+}

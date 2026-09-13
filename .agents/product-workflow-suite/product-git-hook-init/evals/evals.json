@@ -1,0 +1,106 @@
+{
+  "skill_name": "product-git-hook-init",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "java_js_monorepo_recommends_lefthook",
+      "prompt": "这个仓库有 Java 后端和 H5 前端，还没有 Git Hook。请帮我设计提交前质量门禁。",
+      "files": ["sandbox/java-js/package.json", "sandbox/java-js/backend/build.gradle.kts"],
+      "expected_output": "Recommend Lefthook for a new multi-tech-stack project, map JS/H5 and Java commands separately, and avoid defaulting to Husky or pre-commit.",
+      "assertions": [
+        "Output recommends Lefthook as the default for a new multi-tech-stack project.",
+        "Output does not recommend Husky as the default manager.",
+        "Output separates frontend and backend checks by root or equivalent project boundary.",
+        "Output avoids putting full test suites into pre-commit by default."
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "existing_pre_commit_is_preserved",
+      "prompt": "这个项目已经有 .pre-commit-config.yaml，帮我检查并补齐 Git Hook。",
+      "files": ["sandbox/precommit/.pre-commit-config.yaml", "sandbox/precommit/pyproject.toml"],
+      "expected_output": "Preserve pre-commit and conservatively add missing local hooks without migrating to Lefthook.",
+      "assertions": [
+        "Output preserves the existing pre-commit manager.",
+        "Output does not migrate the project to Lefthook.",
+        "Output uses conservative merge language rather than overwrite language."
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "android_ios_no_node_avoids_npm_requirement",
+      "prompt": "我们是 Android 和 iOS 原生仓库，没有 Node 根工具链，希望环境越简单越好。",
+      "files": ["sandbox/mobile/android/build.gradle.kts", "sandbox/mobile/ios/App.xcodeproj/project.pbxproj"],
+      "expected_output": "Recommend Lefthook binary or thin script handler, not npm as a required distribution channel, and treat xcodebuild as pre-push candidate requiring confirmation.",
+      "assertions": [
+        "Output states Lefthook does not require npm at runtime.",
+        "Output avoids making npm a required install path.",
+        "Output puts xcodebuild test behind user confirmation or pre-push candidate wording."
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "test_infra_gap_delegates_to_unit_test_init",
+      "prompt": "Git Hook 检查里发现项目没有测试命令，也没有 junit.xml 或 coverage.xml。",
+      "files": ["sandbox/no-tests/package.json"],
+      "expected_output": "Do not initialize test framework in this skill; mark product-unit-test-init as required.",
+      "assertions": [
+        "Output explicitly delegates missing test infrastructure to product-unit-test-init.",
+        "Output does not generate unit test code.",
+        "Output does not configure coverage reporting directly."
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "team_defined_coverage_command_goes_to_pre_push",
+      "prompt": "这个项目已经能跑 npm run test:coverage，并且团队把覆盖率阈值配置在 vitest.config.ts 里。请把测试通过和覆盖率检查接到 Git Hook。",
+      "files": ["sandbox/frontend/package.json", "sandbox/frontend/vitest.config.ts"],
+      "expected_output": "Reuse the existing team-defined coverage command in pre-push, do not create a unified incremental coverage tool, and route missing tests back to product-unit-test-generator.",
+      "assertions": [
+        "Output maps the existing test:coverage command to pre-push or an equivalent heavy-check stage.",
+        "Output does not generate a new incremental coverage script by default.",
+        "Output preserves the team's threshold source instead of inventing a new threshold.",
+        "Output routes missing tests or coverage failures to product-unit-test-generator."
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "existing_husky_v4_is_preserved",
+      "prompt": "这个 JS 项目还在用 Husky v4，配置写在 package.json 的 husky.hooks 里。请诊断并补齐测试通过和覆盖率 pre-push 门禁。",
+      "files": ["sandbox/husky-v4/package.json"],
+      "expected_output": "Detect package.json husky.hooks as existing Husky, preserve Husky v4, and append the team coverage command to husky.hooks.pre-push without migrating to Lefthook.",
+      "assertions": [
+        "Output identifies `package.json.husky.hooks` as Husky v4 or an existing Husky setup.",
+        "Output preserves the existing Husky manager and does not migrate to Lefthook.",
+        "Output adds or proposes `pre-push` inside `husky.hooks` rather than creating only a `.husky/` directory.",
+        "Output reuses the existing team-defined coverage or CI test command."
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "custom_core_hookspath_is_diagnosed",
+      "prompt": "这个仓库没有 .husky，但是 git config core.hooksPath 指到了 .githooks。请检查现有门禁并给出保守补齐方案。",
+      "files": ["sandbox/custom-hooks/.git/config", "sandbox/custom-hooks/.githooks/pre-commit", "sandbox/custom-hooks/package.json"],
+      "expected_output": "Detect core.hooksPath/.githooks as the existing hook location, avoid editing .git/config, and propose patching the target hook files only.",
+      "assertions": [
+        "Output detects `core.hooksPath` or `.githooks` as an existing hook setup.",
+        "Output explicitly says it will not edit `.git/config`.",
+        "Output proposes conservative changes to the target hook directory.",
+        "Output does not recommend installing Husky just because package.json exists."
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "maven_jest_incremental_quality_gate_fixtures",
+      "prompt": "$product:git-hook-init。遗留仓同时有 Maven 和 Jest，已有红测试；请按增量口径接门禁，不要要求全仓全绿。",
+      "files": ["tests/fixtures/quality-gates/maven/", "tests/fixtures/quality-gates/jest/", "product-git-hook-init/references/unit-test-quality-gates.md"],
+      "expected_output": "Reuses each stack existing related-test and changed-line/module coverage capability; records known failures; blocks only new failures or coverage below the project threshold; does not invent a suite-wide diff-cover algorithm.",
+      "assertions": [
+        "Keeps dated known-failures baselines for Maven and Jest and treats existing failures as allowed debt.",
+        "Fails when a new failure appears compared with the baseline.",
+        "Fails when changed-line coverage is below each project threshold.",
+        "Does not require full-suite green or generate a new universal incremental coverage tool."
+      ]
+    }
+  ]
+}

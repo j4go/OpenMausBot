@@ -1,0 +1,19 @@
+[
+  {"query": "$product:develop 帮我实现代码", "should_trigger": true},
+  {"query": "产物都批准了，开始写代码吧", "should_trigger": true},
+  {"query": "帮我按开发计划逐个任务实现", "should_trigger": true},
+  {"query": "这个功能帮我用 TDD 写实现", "should_trigger": true},
+  {"query": "帮我给这个服务补单元测试并实现", "should_trigger": true},
+  {"query": "开发计划跑完了，帮我更新 Develop tab 的验证证据", "should_trigger": true},
+  {"query": "实现过程中发现缺测试基建，帮我处理", "should_trigger": true},
+  {"query": "帮我跑回归验证并回写实现证据", "should_trigger": true},
+
+  {"query": "$product:start-implement 帮我推荐执行方式", "should_trigger": false},
+  {"query": "帮我写技术方案", "should_trigger": false},
+  {"query": "帮我写开发计划", "should_trigger": false},
+  {"query": "帮我写 PRD", "should_trigger": false},
+  {"query": "帮我写测试用例", "should_trigger": false},
+  {"query": "帮我配置 Git Hook", "should_trigger": false},
+  {"query": "初始化单测环境", "should_trigger": false},
+  {"query": "帮我画原型", "should_trigger": false}
+]
