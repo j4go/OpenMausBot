@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 研发流程 · 场景判断 → Skill 路由 → 角色执行 → 闭环对账</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --l:#1d4ed8; --l-bg:#eff6ff; --m:#b45309; --m-bg:#fffbeb; --s:#15803d; --s-bg:#f0fdf4;
+    --gate:#dc2626; --gate-bg:#fef2f2; --gold:#a16207; --gold-bg:#fffbeb;
+    --skill:#7c3aed; --skill-bg:#f5f3ff; --skill-line:#ddd6fe;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; padding:28px 18px 48px;}
+  .wrap{max-width:1160px; margin:0 auto;}
+  h1{font-size:21px; font-weight:700; letter-spacing:.3px;}
+  .sub{color:var(--muted); font-size:13px; margin-top:4px;}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin-top:18px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .sec h2{font-size:14px; display:flex; align-items:center; gap:8px; margin-bottom:2px;}
+  .sec h2 .n{display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:24px; border-radius:7px; color:#fff; font-weight:800; font-size:12px; padding:0 6px;}
+  .sec .cap{color:var(--muted); font-size:12px; margin-bottom:10px;}
+  .badge{display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; margin-left:2px;}
+
+  /* 入口条 */
+  .entry{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin-top:16px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .entry .box{background:#f0f2f5; border:1px dashed #cbd5e1; border-radius:8px; padding:5px 11px; font-weight:600; font-size:12.5px;}
+  .entry .arrow{color:var(--muted); font-weight:700;}
+  .entry .tag{background:var(--skill-bg); color:var(--skill); border:1px solid var(--skill-line); border-radius:999px; padding:3px 10px; font-size:12px; font-weight:700;}
+  .entry .hint{font-size:11.5px; color:var(--muted); margin-left:auto;}
+
+  /* 决策表 */
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
+  th{background:#f8fafc; font-size:12px; color:#374151; white-space:nowrap;}
+  th.skill-col{background:var(--skill-bg); color:var(--skill);}
+  td.c,th.c{text-align:center; white-space:nowrap;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9; border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:11.5px; color:#0f172a;}
+  .sk{display:inline-block; background:var(--skill-bg); color:var(--skill); border:1px solid var(--skill-line); border-radius:6px; padding:1px 7px; font-size:11.5px; font-weight:700; white-space:nowrap;}
+
+  /* 流水线 lanes */
+  .lanes{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:4px;}
+  .lane{border-radius:12px; padding:14px; border:1px solid var(--line); background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .lane.l{border-top:4px solid var(--l);} .lane.m{border-top:4px solid var(--m);} .lane.s{border-top:4px solid var(--s);}
+  .lane h3{font-size:14px; display:flex; align-items:center; gap:7px;}
+  .lane h3 .lv{display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:7px; color:#fff; font-weight:800; font-size:12px;}
+  .l .lv{background:var(--l);} .m .lv{background:var(--m);} .s .lv{background:var(--s);}
+  .lane .desc{color:var(--muted); font-size:11.5px; margin:5px 0 10px;}
+  .st{display:flex; align-items:center; gap:6px; padding:5px 8px; border:1px solid var(--line); border-radius:7px; margin-bottom:6px; background:#fafbfc; font-size:12px;}
+  .st .i{flex:0 0 auto; width:18px; height:18px; border-radius:5px; background:#e2e8f0; color:#475569; font-size:10.5px; font-weight:800; display:inline-flex; align-items:center; justify-content:center;}
+  .st .t{flex:1; font-weight:600;}
+  .st .s{font-size:10.5px; color:var(--skill); background:var(--skill-bg); border-radius:5px; padding:0 5px; white-space:nowrap;}
+  .st.gate{border-color:#fecaca; background:var(--gate-bg);}
+  .st.gate .t{color:var(--gate);}
+  .st.reviewed{border-color:#fde68a; background:var(--gold-bg);}
+  .st.reviewed .t{color:var(--gold); font-weight:800;}
+
+  /* 约束链 */
+  .chain{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:4px;}
+  .layer{border-radius:10px; padding:12px 13px; border:1px solid var(--line); background:#fafbfc;}
+  .layer h4{font-size:13px; margin-bottom:3px; display:flex; align-items:center; gap:6px;}
+  .layer .q{font-size:10.5px; color:var(--muted);}
+  .layer ul{list-style:none; margin-top:5px;}
+  .layer li{font-size:11.8px; padding:2.5px 0 2.5px 14px; position:relative; color:#374151;}
+  .layer li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .layer .owner{margin-top:6px; font-size:11px; color:var(--muted);}
+  .layer .owner b{color:var(--ink);}
+  .l1{border-top:3px solid var(--skill);} .l2{border-top:3px solid var(--l);}
+  .l3{border-top:3px solid var(--m);} .l4{border-top:3px solid var(--gate);}
+
+  /* 闭环 */
+  .loop{display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:6px;}
+  .loop .b{border:1px solid var(--line); border-radius:9px; padding:8px 14px; background:#fafbfc; font-size:12.5px; font-weight:600; text-align:center;}
+  .loop .b.hl{background:var(--skill-bg); border-color:var(--skill-line); color:var(--skill);}
+  .loop .ar{color:var(--muted); font-weight:800; font-size:13px;}
+  .loopnote{text-align:center; color:var(--muted); font-size:11.5px; margin-top:6px;}
+
+  /* 底部 */
+  .foot{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .foot h3{font-size:12.5px; margin-bottom:6px; color:#374151;}
+  .foot ul{list-style:none;}
+  .foot li{font-size:12px; padding:2.5px 0 2.5px 14px; position:relative; color:#374151;}
+  .foot li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .foot .k{color:var(--ink); font-weight:600;}
+  .foot .sm{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+  .foot .sm span{font-size:11px; border:1px solid var(--line); border-radius:6px; padding:2px 7px; background:#fafbfc; color:#374151;}
+  .foot .sm .human{color:var(--gold); font-weight:800;}
+  footer{margin-top:16px; color:var(--muted); font-size:11.5px; text-align:center;}
+  @media (max-width:900px){ .lanes{grid-template-columns:1fr;} .chain{grid-template-columns:1fr 1fr;} .foot{grid-template-columns:1fr;} }
+  @media (max-width:560px){ .chain{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Demo 研发流程 · 需求入口机制 v3</h1>
+  <div class="sub">总入口 = <b>智能场景判断</b> → <b>skill 指名路由</b> → <b>角色执行</b>；合理性靠四层约束链保障，每轮跑完做<b>定性对账 + 量化度量</b>闭环（v3 新增）</div>
+
+  <!-- 入口 -->
+  <div class="entry">
+    <span class="box">业务需求进来</span>
+    <span class="arrow">→</span>
+    <span class="box" style="border-color:#93c5fd; background:var(--l-bg);">指挥官：场景判断 + 澄清<br><small style="font-weight:400;">模糊/高风险 → <span class="sk">grill-me</span> 逐步追问</small></span>
+    <span class="arrow">→</span>
+    <span class="box" style="border-color:#c4b5fd; background:var(--skill-bg);">查决策表：场景 → skill → 角色<br><small style="font-weight:400;">见下方核心路由表</small></span>
+    <span class="arrow">→</span>
+    <span class="tag">分级 L / M / S → 进 lane ↓</span>
+    <span class="hint">拿不准下一步 → 问指挥官</span>
+  </div>
+
+  <!-- 1 决策表 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--skill);">1</span>核心路由：场景 → skill → 角色（决策表，2026-09-12 机制对齐）</h2>
+    <div class="cap">把"临场判断"变成"查表可得"：每个场景钉死调用哪个 Matt skill、由哪个角色执行、留下什么产物痕迹。skill 多含 <code>disable-model-invocation: true</code>（等人显式点名），解法 = 指挥官在委派指令中<b>指名调用</b>。</div>
+    <table>
+      <tr>
+        <th style="width:20%;">触发场景</th>
+        <th>指挥官动作</th>
+        <th class="skill-col" style="width:18%;">指名 skill</th>
+        <th style="width:16%;">执行角色</th>
+        <th style="width:22%;">产物 / 痕迹</th>
+      </tr>
+      <tr><td>需求模糊 / 高风险 / 改动大</td><td>逐步追问需求方，对抗质询</td><td><span class="sk">grill-me</span>（= grilling 组合壳）</td><td class="c">指挥官本人</td><td>clarify.md §3 假设清单</td></tr>
+      <tr><td>需求清楚，要成文</td><td>委派规格（指名调用）</td><td><span class="sk">to-spec</span></td><td class="c">Demo-Spec</td><td>prd.md（标注"由 to-spec 产出"）</td></tr>
+      <tr><td>规格/计划要拆分</td><td>委派计划（指名调用）</td><td><span class="sk">to-tickets</span></td><td class="c">Demo-Tickets</td><td>development-plan.md</td></tr>
+      <tr><td>bug / 异常报告</td><td>委派诊断（指名调用）</td><td><span class="sk">diagnosing-bugs</span></td><td class="c">Demo-QA / Implement</td><td>根因分析 + 修复单测</td></tr>
+      <tr><td>超大任务 / 方向不明</td><td>委派探路（指名调用）</td><td><span class="sk">wayfinder</span></td><td class="c">指挥官 + Demo-Spec</td><td>方向结论 → 定 L/M</td></tr>
+      <tr><td>需求清楚且 S 级</td><td>直接委派快速验证</td><td><span class="sk">tdd</span> / <span class="sk">implement</span></td><td class="c">Demo-Implement</td><td>最小产物 + 验证证据</td></tr>
+    </table>
+  </div>
+
+  <!-- 2 流水线 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--l);">2</span>流水线：分级裁剪流程长短，每步挂 skill（门禁不豁免）</h2>
+    <div class="cap">分级 = 横向裁剪；Reviewed 人批与 QA 判定各级保留。skill 标签 = 该步执行角色被指名调用的技能。</div>
+    <div class="lanes">
+      <div class="lane l">
+        <h3><span class="lv">L</span>大型 / 从 0</h3>
+        <div class="desc">新功能、跨层改动 · 全产物集 · through-run / stage-gated</div>
+        <div class="st"><span class="i">1</span><span class="t">澄清 + 分级</span><span class="s">grill-me?</span></div>
+        <div class="st"><span class="i">2</span><span class="t">规格 PRD</span><span class="s">to-spec</span></div>
+        <div class="st"><span class="i">3</span><span class="t">技术方案 + 计划</span><span class="s">to-tickets</span></div>
+        <div class="st gate"><span class="i">⛔</span><span class="t">对抗审查（fresh）</span><span class="s">code-review</span></div>
+        <div class="st reviewed"><span class="i">★</span><span class="t">Reviewed 人批</span></div>
+        <div class="st"><span class="i">4</span><span class="t">TDD 实现</span><span class="s">tdd</span></div>
+        <div class="st gate"><span class="i">⛔</span><span class="t">代码审查（只读）</span><span class="s">code-review</span></div>
+        <div class="st"><span class="i">5</span><span class="t">构建与验证（CI 等价门禁）</span><span class="s">setup-pre-commit</span></div>
+        <div class="st gate"><span class="i">⛔</span><span class="t">QA 验证</span><span class="s">diagnosing-bugs</span></div>
+        <div class="st"><span class="i">6</span><span class="t">测试环境部署</span><span class="s">dry-run</span></div>
+      </div>
+      <div class="lane m">
+        <h3><span class="lv">M</span>中型 / 单层</h3>
+        <div class="desc">模块增强、bug 修复 · 保留人批 + QA · stage-gated</div>
+        <div class="st"><span class="i">1</span><span class="t">澄清 + 分级</span><span class="s">grill-me?</span></div>
+        <div class="st"><span class="i">2</span><span class="t">规格 PRD（可短写）</span><span class="s">to-spec</span></div>
+        <div class="st"><span class="i">3</span><span class="t">轻量计划</span><span class="s">to-tickets</span></div>
+        <div class="st gate"><span class="i">⛔</span><span class="t">对抗审查（保留）</span><span class="s">code-review</span></div>
+        <div class="st reviewed"><span class="i">★</span><span class="t">Reviewed 人批</span></div>
+        <div class="st"><span class="i">4</span><span class="t">TDD 实现</span><span class="s">tdd</span></div>
+        <div class="st gate"><span class="i">⛔</span><span class="t">代码审查 + QA</span><span class="s">code-review / diagnosing-bugs</span></div>
+      </div>
+      <div class="lane s">
+        <h3><span class="lv">S</span>小型 / 快速迭代</h3>
+        <div class="desc">文案、样式、单点修复、文档 · QA lite · 跳过对抗审查 · TDD 保持强制</div>
+        <div class="st"><span class="i">1</span><span class="t">澄清（快速）</span></div>
+        <div class="st"><span class="i">2</span><span class="t">直接委派实现</span><span class="s">tdd / implement</span></div>
+        <div class="st"><span class="i">3</span><span class="t">快速验证</span><span class="s">Build / QA lite</span></div>
+        <div class="st" style="background:var(--s-bg); border-style:dashed;"><span class="i">⚠</span><span class="t" style="color:var(--s);">写 git 代码仓库的改动仍要需求方过目</span></div>
+        <div class="st" style="border-style:dashed;"><span class="i">!</span><span class="t">权限/敏感数据/迁移/跨仓/架构 → 必升 L/M</span></div>
+        <div class="st" style="border-style:dashed;"><span class="i">!</span><span class="t">需严谨测试的需求 → 不归 S 级，升 M/L（TDD 不开口子）</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 约束链 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--m);">3</span>怎么保证判断与协作"合理"？——四层约束链</h2>
+    <div class="cap">判断本身是概率，给不了硬保证；但可以让不合理判断无处藏身。质量终审不依赖"调用方自证"，依赖独立校验。</div>
+    <div class="chain">
+      <div class="layer l1">
+        <h4>① 规则层 · 查表</h4>
+        <div class="q">把临场判断变成查表</div>
+        <ul>
+          <li>决策表固化进协作机制/02-场景决策表.md</li>
+          <li>我的每次选择可对账：偏差当场可见</li>
+        </ul>
+        <div class="owner">负责人：<b>指挥官</b> + 文档</div>
+      </div>
+      <div class="layer l2">
+        <h4>② 契约层 · 留痕</h4>
+        <div class="q">委派指名 + 产物标注</div>
+        <ul>
+          <li>委派写死："用 <code>to-spec</code> 产出 prd.md"</li>
+          <li>产物 header 标注 skill 痕迹</li>
+          <li>每环有可审计指纹，事后可翻验</li>
+        </ul>
+        <div class="owner">负责人：<b>指挥官委派指令</b></div>
+      </div>
+      <div class="layer l3">
+        <h4>③ 校验层 · 独立</h4>
+        <div class="q">对抗审查不信我</div>
+        <ul>
+          <li>Demo-CodeReview <b>fresh 上下文</b>，不带我的判断结论</li>
+          <li>三轴审查：必要性 / 可行性 / 风险</li>
+          <li>判断错了或 skill 用错，方案硬伤在 Reviewed 前被揪出</li>
+        </ul>
+        <div class="owner">负责人：<b>Demo-CodeReview</b>（只读）</div>
+      </div>
+      <div class="layer l4">
+        <h4>④ 门禁层 · 人闸</h4>
+        <div class="q">最贵的闸是人</div>
+        <ul>
+          <li>Reviewed = 人批（只有指挥官能写）</li>
+          <li>QA 门禁 QA-Pending → Passed / Blocked</li>
+          <li>状态机锁死顺序，不可跳步</li>
+        </ul>
+        <div class="owner">负责人：<b>需求方</b> + 状态机</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 闭环 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--s);">4</span>对账闭环：保证是跑出来的，不是写出来的</h2>
+    <div class="cap">每完成一个需求，加一步流程对账：实际走的链条 vs 决策表预测。偏差记复盘，下一轮修正。</div>
+    <div class="loop">
+      <div class="b">需求完成</div><span class="ar">→</span>
+      <div class="b hl">流程对账<br><small style="font-weight:400;">实际链条 vs 决策表</small></div><span class="ar">→</span>
+      <div class="b">偏差记复盘<br><small style="font-weight:400;">误判 / 断链 / 表不适用</small></div><span class="ar">→</span>
+      <div class="b">修正决策表 / SOUL<br><small style="font-weight:400;">下一轮收紧</small></div><span class="ar">→</span>
+      <div class="b">下一需求</div>
+    </div>
+    <div class="loopnote">三条诚实边界：① 看不到 bot 内部 → 契约层留痕是闭环关键；② 调了 ≠ 做得好 → 质量押在对抗审查 + QA；③ 场景判断是概率 → 规则层写得越具体，"我认为"占比越低 · 量化度量见下方 §5</div>
+  </div>
+
+  <!-- 5 优化版 v3 -->
+  <div class="sec">
+    <h2><span class="n" style="background:#0f766e;">5</span>优化版 v3：量化闭环与显式决策（2026-09-12 需求方确认）</h2>
+    <div class="cap">诊断对照业界主流后确定的 6 项结论——补量化、正名现有闸、显式声明、保留更严项。逐条决策见《协作机制/10-优化方案决策.md》。</div>
+    <table>
+      <tr>
+        <th style="width:18%;">议题</th>
+        <th style="width:38%;">v3 决策</th>
+        <th>一句话理由</th>
+      </tr>
+      <tr><td>度量闭环</td><td><b>每切片记 3 个数</b><br>① 澄清→Reviewed 前置时间<br>② 实现→QA 缺陷返工数<br>③ QA 一次通过（是/否）<br><small style="color:var(--muted);">记入 .workflow-state.json</small></td><td>撑起对账闭环的量化部分，成本≈0</td></tr>
+      <tr><td>CI</td><td><b>构建验证 = "CI 等价门禁"</b><br>Reviewed 之后、QA 之前的固定闸</td><td>机制已被状态机锁死，只差显式命名</td></tr>
+      <tr><td>覆盖率门禁</td><td><b>按风险分级</b>：核心业务模块 ≥80%<br>工具 / 脚本 / 演示页不设阈值</td><td>TDD 管"有测试"，阈值管"测到关键处"</td></tr>
+      <tr><td>S 级 TDD</td><td><b>保持强制，不开口子</b></td><td>需要严谨测试就不该归 S 级，分级承担风险裁剪</td></tr>
+      <tr><td>分支 / PR</td><td><b>显式声明为有意选择</b>，不引入<br>多人协作时重开决策</td><td>单人单机 + 流程内双审查已是替代品</td></tr>
+      <tr><td>更严项 6 条</td><td><b>全部保留，不动</b></td><td>生产级裁定下流程重量是交付物</td></tr>
+    </table>
+  </div>
+
+  <!-- 6 多入口归一 -->
+  <div class="sec" id="entry">
+    <h2><span class="n" style="background:var(--gold);">6</span>多入口归一与公共规则（2026-09-12 生效）</h2>
+    <div class="cap">OMB 多 bot 无共享记忆，多入口趋同做不到 Grok Build 的构造性趋同（单脑），只能工程化围堵：<b>公共规则 + SOUL 双保险 + 四层设计</b>——单独使用任一角色时，入口行为与全组一致。</div>
+    <div class="mark t">🧭 <b>入口路由（每个角色自带）</b>：收到<b>业务需求</b>（改代码 / 修 bug / 新增功能）→ <b>上报指挥官</b>分级分派，不自行开工、不自行委托；收到<b>只读咨询</b>（问机制 / 问现状 / 问文档）→ <b>直接回答</b>；收到<b>明确委派</b> → 按委派契约执行。QA / CodeReview（只读角色）追加：收到写仓库请求（含用户直接指示）→ 说明只读边界并上报，不自行写入。</div>
+    <div class="mark g">📜 <b>公共规则（OMB Section Context）</b>：桌面应用「团队地图」→ 分区卡片 → Context 按钮粘贴（只有用户能写，agent 禁写；上限 24000 字节）；内容每轮注入全组 prompt。Demo v1 已生效 = 入口归一 + 四条铁律（Reviewed 唯一写入者 / 唯一写入者纪律 / 门禁不可豁免 / 不越权）+ 事实源指针 + 协作姿态；留档 协作机制/demo-team-section-context.md。</div>
+    <div class="mark r">⚖️ <b>能力边界矩阵（协作机制/05-能力边界矩阵.md）</b>：全局禁做 G1–G8 + 8 角色 × 可写范围 × 绝对禁做 + 裁决优先级（用户当前指令 &gt; Section Context &gt; SOUL &gt; 适配清单）。诚实边界：规则/状态/门禁三层围堵只能降低漂移、让偏差可审计，不能保证绝对趋同（模型概率本质）。</div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="sec foot">
+    <div>
+      <h3>状态机（.workflow-state.json）</h3>
+      <ul>
+        <li><span class="k">AI 只能写</span>：Draft / Blocked / Not Applicable</li>
+        <li><span class="k">Reviewed 只能指挥官写</span>（人批准后才进实现）</li>
+        <li><span class="k">QA 取值</span>：QA-Pending → QA-Passed / QA-Blocked</li>
+      </ul>
+      <div class="sm">
+        <span class="ai">Draft · Blocked · Not Applicable</span>
+        <span class="human">Reviewed（人）</span>
+        <span>QA-Pending → QA-Passed / QA-Blocked</span>
+      </div>
+    </div>
+    <div>
+      <h3>委派纪律（指挥官）</h3>
+      <ul>
+        <li>先委派<span class="k">规格和计划</span>，再委派<span class="k">单一实现者</span>；实现后只委派<span class="k">只读</span> Review / 构建 / 验证</li>
+        <li>同一时刻<span class="k">不允许两个写入角色</span>同时改 E:\Demo；每次委派说明输入 / 输出文件 / 写入范围 / 验证命令</li>
+        <li>没有部署 runbook + 本轮明确批准时，<span class="k">部署只能 dry-run</span></li>
+        <li>看板只广播<span class="k">业务需求</span>阶段状态；对话型 / 文档型 / 咨询型不广播</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>Demo 团队 · v3 依据《协作机制/10-优化方案决策.md》（2026-09-12 确认）+《协作机制/02-场景决策表.md》决策表 /《协作机制/01-需求分级.md》需求分级 /《协作机制/04-约束链与对账.md》· 诊断基线见《工作流最佳实践诊断.md》v1 · 产物命名用海天，门禁用 SDD</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 工作流方案总结 · 多 Agent 团队总纲（Matt × 海天 借鉴对照）</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --l:#1d4ed8; --l-bg:#eff6ff; --m:#b45309; --m-bg:#fffbeb; --s:#15803d; --s-bg:#f0fdf4;
+    --gate:#dc2626; --gate-bg:#fef2f2; --gold:#a16207; --gold-bg:#fffbeb;
+    --skill:#7c3aed; --skill-bg:#f5f3ff; --skill-line:#ddd6fe; --teal:#0f766e; --teal-bg:#f0fdfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--ink); font:14px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; padding:0 0 48px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 18px;}
+  header{background:linear-gradient(135deg,#1e3a5f 0%,#264d80 55%,#3b2f63 100%); color:#fff; padding:30px 0 26px; margin-bottom:20px;}
+  header .wrap{display:flex; flex-wrap:wrap; align-items:center; gap:18px;}
+  header h1{font-size:24px; font-weight:800; letter-spacing:.4px;}
+  header .sub{font-size:13px; color:#cbd5e1; margin-top:6px; max-width:820px;}
+  .stamp{display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); border-radius:999px; padding:5px 14px; font-size:12px; font-weight:600;}
+  .stamp b{color:#fbbf24;}
+  nav{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.95); backdrop-filter:blur(6px); border-bottom:1px solid var(--line); padding:8px 0; margin-bottom:18px;}
+  nav .wrap{display:flex; gap:6px; flex-wrap:wrap; overflow-x:auto;}
+  nav a{text-decoration:none; color:#475569; font-size:12.5px; font-weight:600; border:1px solid var(--line); border-radius:999px; padding:4px 11px; white-space:nowrap; background:#fff;}
+  nav a:hover{color:var(--skill); border-color:var(--skill-line); background:var(--skill-bg);}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-top:18px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .sec h2{font-size:16px; display:flex; align-items:center; gap:9px; margin-bottom:4px;}
+  .sec h2 .n{display:inline-flex; align-items:center; justify-content:center; min-width:26px; height:26px; border-radius:8px; color:#fff; font-weight:800; font-size:13px; padding:0 7px;}
+  .sec .cap{color:var(--muted); font-size:12.5px; margin-bottom:12px;}
+  h3{font-size:13.5px; margin:14px 0 7px; color:#1e293b;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
+  th{background:#f8fafc; font-size:12px; color:#374151;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9; border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:11.5px; color:#0f172a;}
+  .badge{display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .b-l{background:var(--l-bg); color:var(--l);} .b-m{background:var(--m-bg); color:var(--m);} .b-s{background:var(--s-bg); color:var(--s);}
+  .b-gate{background:var(--gate-bg); color:var(--gate);} .b-gold{background:var(--gold-bg); color:var(--gold);}
+  .b-skill{background:var(--skill-bg); color:var(--skill);} .b-teal{background:var(--teal-bg); color:var(--teal);}
+
+  /* 角色卡片 */
+  .roles{display:grid; grid-template-columns:repeat(4,1fr); gap:11px;}
+  .role{border:1px solid var(--line); border-radius:10px; padding:11px 12px; background:#fafbfc; display:flex; flex-direction:column; gap:5px;}
+  .role .nm{font-weight:800; font-size:12.5px; display:flex; align-items:center; gap:6px;}
+  .role .nm .k{font-size:10px; color:var(--muted); font-weight:600; background:#eef1f4; border-radius:5px; padding:1px 5px;}
+  .role .tt{font-size:11px; color:var(--muted);}
+  .role .rw{font-size:11px; border-radius:6px; padding:3px 7px; font-weight:700;}
+  .rw.write{background:var(--l-bg); color:var(--l);} .rw.read{background:var(--s-bg); color:var(--s);} .rw.human{background:var(--gold-bg); color:var(--gold);}
+
+  /* 分级 lanes */
+  .lanes{display:grid; grid-template-columns:repeat(3,1fr); gap:13px;}
+  .lane{border-radius:11px; padding:13px 14px; border:1px solid var(--line); background:var(--card);}
+  .lane.l{border-top:4px solid var(--l);} .lane.m{border-top:4px solid var(--m);} .lane.s{border-top:4px solid var(--s);}
+  .lane h4{font-size:13.5px; display:flex; align-items:center; gap:7px;}
+  .lane h4 .lv{display:inline-flex; align-items:center; justify-content:center; width:23px; height:23px; border-radius:7px; color:#fff; font-weight:800; font-size:12px;}
+  .l .lv{background:var(--l);} .m .lv{background:var(--m);} .s .lv{background:var(--s);}
+  .lane .d{color:var(--muted); font-size:11.5px; margin:4px 0 8px;}
+  .lane ul{list-style:none;}
+  .lane li{font-size:11.8px; padding:2.5px 0 2.5px 13px; position:relative; color:#374151;}
+  .lane li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+
+  /* 流水线 */
+  .pipe{display:flex; flex-wrap:wrap; gap:6px; align-items:stretch; margin:8px 0 4px;}
+  .step{flex:1 1 130px; border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fafbfc; font-size:12px; font-weight:600; text-align:center; position:relative;}
+  .step small{display:block; font-weight:400; color:var(--muted); font-size:10.5px; margin-top:2px;}
+  .step.gate{border-color:#fecaca; background:var(--gate-bg);} .step.gate b{color:var(--gate);}
+  .step.reviewed{border-color:#fde68a; background:var(--gold-bg);} .step.reviewed b{color:var(--gold);}
+  .step.ci{border-color:#bfdbfe; background:var(--l-bg);}
+  .arrow{color:var(--muted); font-weight:800; align-self:center;}
+
+  /* L/M/S 流水线对照表 */
+  .lms-wrap{overflow-x:auto; margin-top:6px;}
+  .lms{width:100%; border-collapse:collapse; font-size:11.8px; min-width:960px;}
+  .lms th,.lms td{border:1px solid var(--line); padding:6px 4px; text-align:center; vertical-align:middle;}
+  .lms th{background:#f8fafc; font-size:10.8px; color:#374151; line-height:1.35;}
+  .lms th small{font-weight:400; color:var(--muted);}
+  .lms td.lv{font-weight:800; font-size:11.5px; line-height:1.35; white-space:nowrap;}
+  .lms tr.lane-l td.lv{color:var(--l);} .lms tr.lane-m td.lv{color:var(--m);} .lms tr.lane-s td.lv{color:var(--s);}
+  .lms tr.lane-l td:first-child{border-left:4px solid var(--l);}
+  .lms tr.lane-m td:first-child{border-left:4px solid var(--m);}
+  .lms tr.lane-s td:first-child{border-left:4px solid var(--s);}
+  .lms td .s{display:inline-flex; align-items:center; justify-content:center; min-width:24px; height:20px; padding:0 6px; border-radius:6px; font-size:10.5px; font-weight:800; white-space:nowrap;}
+  .s-ok{background:var(--s-bg); color:var(--s);}
+  .s-gate{background:var(--gate-bg); color:var(--gate);}
+  .s-star{background:var(--gold-bg); color:var(--gold);}
+  .s-ci{background:var(--l-bg); color:var(--l);}
+  .s-lite{background:var(--m-bg); color:var(--m);}
+  .s-skip{background:#f3f4f6; color:#9ca3af;}
+
+  /* 双栏对比 */
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:6px;}
+  .card{border:1px solid var(--line); border-radius:10px; padding:13px 15px; background:#fafbfc;}
+  .card h4{font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:7px;}
+  .card ul{list-style:none;}
+  .card li{font-size:12px; padding:3px 0 3px 14px; position:relative; color:#374151;}
+  .card li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .card li b{color:var(--ink);}
+  .mark{background:var(--teal-bg); border:1px solid #99f6e4; border-radius:8px; padding:9px 12px; font-size:12.5px; margin-top:10px;}
+  .mark b{color:var(--teal);}
+
+  /* 四层 */
+  .chain{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:4px;}
+  .layer{border-radius:10px; padding:12px 13px; border:1px solid var(--line); background:#fafbfc;}
+  .layer h4{font-size:13px; margin-bottom:3px;}
+  .layer .q{font-size:10.5px; color:var(--muted);}
+  .layer ul{list-style:none; margin-top:5px;}
+  .layer li{font-size:11.8px; padding:2.5px 0 2.5px 14px; position:relative; color:#374151;}
+  .layer li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .layer .owner{margin-top:6px; font-size:11px; color:var(--muted);}
+  .layer .owner b{color:var(--ink);}
+  .l1{border-top:3px solid var(--skill);} .l2{border-top:3px solid var(--l);}
+  .l3{border-top:3px solid var(--m);} .l4{border-top:3px solid var(--gate);}
+
+  /* 度量 */
+  .metrics{display:grid; grid-template-columns:repeat(3,1fr); gap:11px;}
+  .metric{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fafbfc;}
+  .metric .k{font-size:11px; color:var(--muted);}
+  .metric .v{font-size:12.5px; font-weight:800; color:var(--teal); margin:3px 0;}
+  .metric .t{font-size:11.5px; color:#374151;}
+
+  footer{margin-top:22px; color:var(--muted); font-size:11.5px; text-align:center;}
+  @media (max-width:960px){ .roles{grid-template-columns:repeat(2,1fr);} .lanes{grid-template-columns:1fr;} .chain{grid-template-columns:1fr 1fr;} .duo{grid-template-columns:1fr;} }
+  @media (max-width:600px){ .roles{grid-template-columns:1fr;} .chain{grid-template-columns:1fr;} .metrics{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div>
+      <h1>Demo 工作流方案总结 · 多 Agent 团队总纲</h1>
+      <div class="sub">整体方案全景 + 与 <b>Matt 单 agent skill 方式</b>、<b>海天 product-workflow-suite</b> 的相同点与区别，以及借鉴了什么、为什么不同、不同是为了什么更好的目的。留档 / 复盘 / 推广到其他项目与部门用。</div>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="stamp">📌 状态 <b>已定稿</b></span>
+        <span class="stamp">📅 2026-09-12</span>
+        <span class="stamp">✍️ Demo-指挥官</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#bg">1 背景与裁定</a><a href="#team">2 团队组织</a><a href="#grade">3 需求分级</a>
+  <a href="#pipe">4 流水线</a><a href="#path">5 产物路径</a><a href="#delegate">6 委派契约</a>
+  <a href="#guard">7 约束链</a><a href="#v2">8 v2 六决策</a><a href="#matt">9 vs Matt</a>
+  <a href="#haitian">10 vs 海天</a><a href="#learn">11 借鉴总结</a><a href="#promo">12 推广要点</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- 1 背景 -->
+<div class="sec" id="bg">
+  <h2><span class="n" style="background:#0f766e;">1</span>背景与裁定</h2>
+  <div class="cap">方案源自 2026-09-12 机制对齐讨论，经 澄清 → 规格 → 计划 → 对抗审查 → Reviewed → 落地 成形。</div>
+  <table>
+    <tr><th style="width:22%;">需求方裁定</th><td>Demo 的<b>需求与功能是演示级</b>，但<b>工作流、skills、交付物、agent 协作均为生产级要求</b> → 设计目标是"生产级机制的完整性"，不是"放松流程"；<b>流程重量本身是交付物的一部分</b>。</td></tr>
+    <tr><th>技术栈</th><td>Java 21 + Spring Boot（backend）/ Vue 3 + Vite + TS（frontend）；本地 git（无远程 origin）；本地 H2/MySQL；测试服部署默认 dry-run。</td></tr>
+    <tr><th>配套文档</th><td>《工作流最佳实践诊断》v1 现状基线 ·《工作流优化方案》v2 决策单一事实源 ·《适配清单》机制单一事实源 ·《研发流程总览.html》流程图 v3 —— 本总纲与四者一起留档。</td></tr>
+  </table>
+</div>
+
+<!-- 2 团队组织 -->
+<div class="sec" id="team">
+  <h2><span class="n" style="background:var(--skill);">2</span>团队组织：1 指挥官 + 7 专家</h2>
+  <div class="cap">写入纪律：先委派规格 + 计划，再委派<b>单一实现者</b>；实现后只委派只读 Review / Build / QA。同一时刻不允许两个写入角色同时改 E:\Demo。</div>
+  <div class="roles">
+    <div class="role"><div class="nm">指挥官 <span class="k">commander</span></div><div class="tt">全流程协调、需求分级、委派、批准与交付门禁</div><span class="rw human">Reviewed 唯一写入者</span></div>
+    <div class="role"><div class="nm">Demo-Spec <span class="k">spec</span></div><div class="tt">澄清→规格：clarify.md / prd.md（可选原型），验收标准</div><span class="rw write">只写规格产物</span></div>
+    <div class="role"><div class="nm">Demo-Tickets <span class="k">tickets</span></div><div class="tt">任务拆解：technical-solution.md / development-plan.md；缺陷 triage</div><span class="rw write">只写计划与缺陷文件</span></div>
+    <div class="role"><div class="nm">Demo-Implement <span class="k">implement</span></div><div class="tt">单任务 TDD（RED-GREEN-REFACTOR），如实报告</div><span class="rw write">单一实现者：代码 + 单测</span></div>
+    <div class="role"><div class="nm">Demo-CodeReview <span class="k">codereview</span></div><div class="tt">fresh 上下文三轴对抗审查（人批前）+ 静态双轴审查（实现后）</div><span class="rw read">只读</span></div>
+    <div class="role"><div class="nm">Demo-Build <span class="k">build</span></div><div class="tt">起栈、构建、健康检查（CI 等价门禁，QA 前置）</div><span class="rw write">写 build-verification.md 到切片（入库）</span></div>
+    <div class="role"><div class="nm">Demo-QA <span class="k">qa</span></div><div class="tt">计划层判定 + wrap-up 门禁（Gate Function）</div><span class="rw read">只读被测代码；写 test-cases.md 与判定</span></div>
+    <div class="role"><div class="nm">Demo-Deploy <span class="k">deploy</span></div><div class="tt">打包、传输、deploy 与冒烟</div><span class="rw human">默认 dry-run，双重批准</span></div>
+  </div>
+</div>
+
+<!-- 3 需求分级 -->
+<div class="sec" id="grade">
+  <h2><span class="n" style="background:var(--m);">3</span>需求分级 L / M / S：流程长度的横向裁剪</h2>
+  <div class="cap">判定发生在指挥官澄清阶段，与需求方对齐；分级写入 <code>.workflow-state.json</code> 的 <code>run_mode</code>（lite / stage-gated / through-run，取海天口径）。<b>分级是流程选择，不是门禁豁免</b>——Reviewed 人批与 QA 判定各级保留。</div>
+  <div class="lanes">
+    <div class="lane l">
+      <h4><span class="lv">L</span>大型 / 从 0</h4>
+      <div class="d">新功能、跨层改动（后端+前端+数据/迁移）</div>
+      <ul>
+        <li>完整流水线 11 步，<b>全部门禁</b></li>
+        <li>run-mode：through-run / stage-gated</li>
+        <li>全产物集 + 全链 skill</li>
+      </ul>
+    </div>
+    <div class="lane m">
+      <h4><span class="lv">M</span>中型 / 单层</h4>
+      <div class="d">模块内增强、bug 修复</div>
+      <ul>
+        <li>澄清 →（轻量计划）→ 对抗审查 → Reviewed → TDD → Review → QA</li>
+        <li><b>保留人批 + QA</b>；technical-solution 可选</li>
+        <li>run-mode：stage-gated</li>
+      </ul>
+    </div>
+    <div class="lane s">
+      <h4><span class="lv">S</span>小型 / 快速迭代</h4>
+      <div class="d">文案、样式、单点修复、文档改动</div>
+      <ul>
+        <li>直接委派 Implement → 快速验证</li>
+        <li>跳过对抗审查与正式 proposal</li>
+        <li><b>写 git 代码仓库的改动仍要需求方过目</b></li>
+        <li><b>TDD 保持强制、不开口子</b></li>
+        <li>run-mode：lite</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mark" style="margin-top:12px;">⚑ <b>S/lite 排除条件</b>：涉及新权限模型 / 敏感数据 / schema/迁移 / 跨仓契约 / 架构边界 / 高风险发布时<b>必须</b>升 L 或 M；fog（不确定高）时保持谨慎，不得降级。速记：需求侧 L/M/S ↔ run-mode（through-run / stage-gated / lite）↔ 产物集（全 / 精简 / 最小）↔ skill 集（全链 / 精简 / 最小）。<b>测试范围（2026-09-13 补）</b>：验证执行默认只覆盖本需求相关 + 受影响关联面（development-plan 写明依据），不默认全量；全量回归仅当改动触及核心共享层（拦截器/全局异常/公共基类/DB schema）或需求方/指挥官明确要求；构建门禁仍全量，分级只约束测试执行。<b>验证审计（2026-09-13 补）</b>：按协作机制 03 接缝规则 7 审计（指挥官纯只读）——截图门禁（引用形式固定 markdown 图片语法，未引用=未交付）+ 测试范围三对照（声明 vs 实际命令 vs git diff 触达面）；门禁生效后硬判、门禁前按当时标准+诚实标注；每 3~5 切片或月度批量审计。<b>审计闭环（同日补）</b>：报告归档 <code>审计/</code> 入库；每次审计必配行动建议清单并分级审批——低风险记录补全指挥官自批，机制修订/历史产物改写/范围扩大上抛需求方（附产物路径与核实方式）；审批后修订并登记跟踪表，下轮审计复核。</div>
+</div>
+
+<!-- 4 流水线与状态机：L/M/S 三档对照 -->
+<div class="sec" id="pipe">
+  <h2><span class="n" style="background:var(--l);">4</span>流水线与状态机：L / M / S 三条 lane 对照</h2>
+  <div class="cap">状态机规则：AI 只能写 Draft / Blocked / Not Applicable；<b>Reviewed 只能指挥官写</b>（人批准，最贵一道闸）；QA 环节 QA-Pending → QA-Passed / QA-Blocked；状态机<b>不可跳步</b>（显式锁步）。三档流程列依适配清单 §4.5；符号：<span class="s s-ok">✓</span> 保留 · <span class="s s-gate">⛔</span> 门禁 · <span class="s s-star">★</span> 人批 · <span class="s s-ci">✓</span> CI 等价门禁 · <span class="s s-lite">简化</span> 裁剪 · <span class="s s-skip">✕</span> 跳过/未列。</div>
+  <div style="margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap;">
+    <span class="badge b-gold">★ Reviewed = 人批准（最贵）</span>
+    <span class="badge b-gate">⛔ QA = Gate Function 门禁</span>
+    <span class="badge b-l">构建验证 = CI 等价门禁，固定闸</span>
+    <span class="badge b-skill">状态机不可跳步</span>
+  </div>
+  <div class="lms-wrap">
+  <table class="lms">
+    <tr>
+      <th style="width:86px;">档位</th>
+      <th>澄清<small>分级 L/M/S</small></th>
+      <th>规格<small>prd.md</small></th>
+      <th>计划<small>技术方案 / plan</small></th>
+      <th>对抗审查<small>fresh 三轴</small></th>
+      <th>Reviewed<small>人批</small></th>
+      <th>TDD<small>RED-GREEN</small></th>
+      <th>代码审查<small>静态双轴</small></th>
+      <th>构建验证<small>CI 等价门禁</small></th>
+      <th>QA 验证<small>Gate Function</small></th>
+      <th>测试环境部署<small>默认 dry-run</small></th>
+    </tr>
+    <tr class="lane-l">
+      <td class="lv">L 大型<br>从 0</td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-star">★</span></td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-ci">✓</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-ok">✓</span></td>
+    </tr>
+    <tr class="lane-m">
+      <td class="lv">M 中型<br>单层</td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-lite">短写</span></td>
+      <td><span class="s s-lite">轻量</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-star">★</span></td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-skip">—</span></td>
+      <td><span class="s s-gate">⛔</span></td>
+      <td><span class="s s-skip">✕</span></td>
+    </tr>
+    <tr class="lane-s">
+      <td class="lv">S 小型<br>快速迭代</td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-lite">短 prd</span></td>
+      <td><span class="s s-lite">短 plan</span></td>
+      <td><span class="s s-skip">✕</span></td>
+      <td><span class="s s-skip">✕</span></td>
+      <td><span class="s s-ok">✓</span></td>
+      <td><span class="s s-skip">✕</span></td>
+      <td><span class="s s-ci">✓</span></td>
+      <td><span class="s s-lite">lite</span></td>
+      <td><span class="s s-skip">✕</span></td>
+    </tr>
+  </table>
+  </div>
+  <div class="mark" style="margin-top:12px;">
+    <b>差异速读 —— 主要是少了什么（依据 §4.5 官方流程列）</b><br>
+    <b>M 比 L 少</b>：独立规格步（prd 短写）、正式技术方案（technical-solution 可选，决策并入 prd/plan）、构建验证独立闸（流程列未显式列；实战 QA 前仍做）、部署步。<b>保留</b>：对抗审查 ⛔、Reviewed ★、TDD、代码审查、QA ⛔（stage-gated）。<br>
+    <b>S 比 M 再少</b>：对抗审查（跳过）、Reviewed 正式人批（写 git 代码仓库的改动仍需求方过目确认）、代码审查、正式计划（仅短 prd + 短 development-plan）。<b>保留</b>：TDD 强制（不开口子）、QA 快速判定（lite）、构建快速验证。<br>
+    <b>各级不豁免</b>：TDD 强制 + QA 判定 + Reviewed（L/M 走状态机人批，S 走需求方过目）——分级是流程选择，不是门禁豁免；纯文档型改动默认 S 或 Not Applicable。
+  </div>
+</div>
+
+<!-- 5 产物路径 -->
+<div class="sec" id="path">
+  <h2><span class="n" style="background:var(--teal);">5</span>产物与路径安排：四层分离</h2>
+  <div class="cap">路径存储合理性 2026-09-12 已判定：现状合理、适合长期迭代。长期建议（现阶段无需动作）：切片 &gt;10 个加 index.md；完成切片以状态机 terminal 态归档；状态机 note 写全（审查留痕唯一落点）。</div>
+  <table>
+    <tr><th style="width:20%;">层</th><th style="width:44%;">内容</th><th>入库</th></tr>
+    <tr><td><code>切片/&lt;需求短名&gt;/</code></td><td>正式产物：clarify.md / prd.md / technical-solution.md（L 必产、M 可选）/ development-plan.md / test-cases.md / deployment-process.md + <code>.workflow-state.json</code></td><td><span class="badge b-s">✅ git 落库</span></td></tr>
+    <tr><td><code>.scratch/&lt;需求短名&gt;/</code></td><td>纯过程区（日志、临时脚本、演练草稿）；验证证据已提升至切片入库</td><td><span class="badge b-gate">❌ gitignore，整目录可随时删除</span></td></tr>
+    <tr><td><code>文档/</code></td><td>机制文档（适配清单、诊断、优化方案、总纲、流程图 v3）</td><td><span class="badge b-s">✅ git 落库</span></td></tr>
+    <tr><td><code>.agents/</code></td><td>技能库版本化（Matt 30 个 + 海天 19 个）</td><td><span class="badge b-s">✅ git 落库</span></td></tr>
+  </table>
+  <div class="mark">↻ <b>验证证据直接落切片入库（2026-09-13）</b>：build-verification.md / qa-verification.md / 截图默认写切片；.scratch 降为纯过程区（日志/草稿），整目录可随时删除。涉及 UI 的验证必须附截图入库（审计门禁，逐项引用，引用形式=markdown 图片语法，纯文字提及不算）。</div>
+</div>
+
+<!-- 6 委派契约 -->
+<div class="sec" id="delegate">
+  <h2><span class="n" style="background:var(--skill);">6</span>委派契约与 HITL 上抛（可审计）</h2>
+  <table>
+    <tr><th style="width:30%;">契约</th><th>内容</th></tr>
+    <tr><td>委派指名 skill</td><td>委派指令写死 skill 名（"用 <code>to-spec</code> 产出 prd.md"），不写笼统描述</td></tr>
+    <tr><td>产物标注来源</td><td>切片产物 header 标注来源 skill（调用痕迹）</td></tr>
+    <tr><td>显式指名绕过限制</td><td>显式指名即绕过 <code>disable-model-invocation</code>，无需修改第三方技能库</td></tr>
+    <tr><td><b>HITL 上抛契约</b></td><td>子 bot 调 Matt skill 遇 HITL 步骤（check seams / quiz / 对抗质询），问题<b>原样上抛指挥官 → 指挥官转问需求方 → 答复回传；禁止子 bot 自答</b>。背景：Matt skill 是「agent 直接对用户」骨架，我们是「指挥官代理需求方」骨架，子 bot 没有对需求方的直接通道。</td></tr>
+  </table>
+</div>
+
+<!-- 7 约束链 -->
+<div class="sec" id="guard">
+  <h2><span class="n" style="background:var(--m);">7</span>合理性保障：四层约束链 + 对账闭环 + 度量</h2>
+  <div class="cap">判断本身是概率，给不了硬保证；但可以让不合理判断无处藏身——质量终审不依赖"调用方自证"，依赖独立校验。</div>
+  <div class="chain">
+    <div class="layer l1"><h4>① 规则层 · 查表</h4><div class="q">决策表固化场景→skill→角色</div><ul><li>偏差当场可见、选择可对账</li></ul><div class="owner">负责人：<b>指挥官 + 文档</b></div></div>
+    <div class="layer l2"><h4>② 契约层 · 留痕</h4><div class="q">委派指名 + 产物标注</div><ul><li>每环有可审计指纹，事后可翻验</li></ul><div class="owner">负责人：<b>指挥官委派指令</b></div></div>
+    <div class="layer l3"><h4>③ 校验层 · 独立</h4><div class="q">对抗审查不信调用方</div><ul><li>Demo-CodeReview fresh 上下文三轴审查</li><li>硬伤在 Reviewed 前被独立揪出</li></ul><div class="owner">负责人：<b>Demo-CodeReview（只读）</b></div></div>
+    <div class="layer l4"><h4>④ 门禁层 · 人闸</h4><div class="q">最贵的闸是人</div><ul><li>Reviewed 人批 + QA 门禁</li><li>状态机不可跳步</li></ul><div class="owner">负责人：<b>需求方 + 状态机</b></div></div>
+  </div>
+  <h3>对账闭环（定性）+ 度量闭环（v2 补，量化）</h3>
+  <div class="metrics">
+    <div class="metric"><div class="k">① 前置时间</div><div class="v">lead_time_to_reviewed</div><div class="t">澄清 → Reviewed 耗时，Reviewed 写入时记</div></div>
+    <div class="metric"><div class="k">② 缺陷返工数</div><div class="v">rework_count</div><div class="t">实现 → QA 通过期间缺陷返工次数，QA 判定时记</div></div>
+    <div class="metric"><div class="k">③ QA 一次通过</div><div class="v">qa_first_pass</div><div class="t">QA 是否一次通过（是/否），QA 判定时记</div></div>
+  </div>
+  <div class="mark">每完成一个需求：实际链条 vs 决策表预测 → 偏差记复盘 → 修正决策表或 SOUL。三个数撑起量化部分，成本≈0，不硬套 DORA 四指标。</div>
+</div>
+
+<!-- 8 v2 决策 -->
+<div class="sec" id="v2">
+  <h2><span class="n" style="background:var(--gold);">8</span>v2 优化决策（六项 + v2.2 决策 8，2026-09-12 需求方确认）</h2>
+  <div class="cap">详见《协作机制/10-优化方案决策.md》（单一事实源）。</div>
+  <table>
+    <tr><th style="width:16%;">议题</th><th style="width:44%;">决策</th><th>理由</th></tr>
+    <tr><td>度量闭环</td><td><b>补</b>：每切片 3 个数（见 §7）</td><td>复盘可量化，成本≈0</td></tr>
+    <tr><td>CI</td><td><b>正名</b>：构建验证 = "CI 等价门禁"（Reviewed 后、QA 前固定闸）</td><td>状态机已锁死该顺序，只差显式命名</td></tr>
+    <tr><td>分支/PR</td><td><b>显式声明为有意选择</b>，不引入；多人协作时重开决策</td><td>单人单机 + 流程内双审查已是替代品</td></tr>
+    <tr><td>覆盖率</td><td><b>补</b>：核心业务模块 ≥80%，工具/脚本/演示页不设阈值</td><td>TDD 管"有测试"，阈值管"测到关键处"</td></tr>
+    <tr><td>S 级 TDD</td><td><b>保持强制，不开口子</b></td><td>需求方裁定：需严谨测试的需求按定义归 M/L</td></tr>
+    <tr><td>更严项 6 条</td><td><b>全部保留</b>（对抗审查 / QA 门禁 / 状态机 / TDD / 唯一写入者 / dry-run）</td><td>生产级裁定下流程重量是交付物</td></tr>
+    <tr><td>能力边界 + 多入口趋同（v2.2 决策 8）</td><td><b>补</b>：适配清单 §8 角色能力与权限边界矩阵（G1–G8 + 8 角色×可写范围×绝对禁做 + 裁决优先级）；Section Context 公共规则落地生效 + 各 SOUL 入口归一条款（双保险）</td><td>边界集中可审计；任意角色单独使用时行为与全组一致</td></tr>
+  </table>
+</div>
+
+<!-- 9 vs Matt -->
+<div class="sec" id="matt">
+  <h2><span class="n" style="background:var(--skill);">9</span>与 Matt 单 agent skill 方式对比</h2>
+  <div class="cap">Matt 方式：单 agent 全栈，一条主线流程 + 技能路由器 ask-matt（人触发）+ 上下文卫生 + on-ramps + 词汇层；agent 直接对用户。</div>
+  <h3>相同点（我们借鉴了什么）</h3>
+  <table>
+    <tr><th style="width:30%;">Matt 概念</th><th style="width:30%;">Demo 对应</th><th>借鉴方式</th></tr>
+    <tr><td>grilling 对抗访谈</td><td>指挥官澄清 + 对抗质询</td><td>原 skill 直接用</td></tr>
+    <tr><td>to-spec / to-tickets 垂直切片</td><td>Demo-Spec / Demo-Tickets 产出 prd.md / development-plan.md</td><td>原 skill 指名调用</td></tr>
+    <tr><td>tdd / implement（RED-GREEN）</td><td>Demo-Implement 单任务 TDD</td><td>原 skill 指名调用</td></tr>
+    <tr><td>code-review 双轴审查</td><td>Demo-CodeReview 静态双轴审查</td><td>原 skill 指名调用</td></tr>
+    <tr><td>diagnosing-bugs（先红后修）</td><td>缺陷诊断委派 Demo-QA / Demo-Implement</td><td>原 skill 指名调用</td></tr>
+    <tr><td>wayfinder（超大任务探路）</td><td>决策表"超大任务/方向不明"行 + 适配清单 §4.7 接缝规则 3（2026-09-12 补全）</td><td>思想采纳，落地形态已定义</td></tr>
+    <tr><td>技能路由器思想</td><td>§3.1 决策表（指挥官执行路由）</td><td>路由器职责内化</td></tr>
+  </table>
+  <div class="mark">结论：<b>Matt 的 30 个技能是 Demo 执行层的主力 skill 库</b>，Demo 不重造轮子，直接消费 Matt 方法论。</div>
+  <h3>不同点</h3>
+  <table>
+    <tr><th style="width:16%;">维度</th><th style="width:26%;">Matt</th><th style="width:30%;">Demo</th><th>不同为了什么</th></tr>
+    <tr><td>执行主体</td><td>单 agent 全栈，上下文连续</td><td>1 指挥官 + 7 专家，委派协作</td><td><b>职能隔离 + 独立校验</b>：写方案≠写代码≠审查≠验证；对抗审查 fresh 上下文彻底隔离调用方判断</td></tr>
+    <tr><td>与需求方关系</td><td>agent 直接对用户</td><td>指挥官代理需求方；HITL 问题上抛</td><td><b>需求方单一接触点</b>；子 bot 无需求方通道，决策权集中到人闸</td></tr>
+    <tr><td>并发控制</td><td>单 agent 无并发问题</td><td>单写入者纪律 + 状态机</td><td>多 bot 同仓防冲突，写入可审计</td></tr>
+    <tr><td>上下文管理</td><td>窗口卫生（compact/handoff）</td><td>外部持久化状态机 + fresh 上下文审查</td><td>多 bot 无法共享内存，状态必须外置、就近、单一事实源</td></tr>
+    <tr><td>流程重量</td><td>轻（鼓励直接 implement）</td><td>显式锁步（不可跳步、S 级 QA 不豁免）</td><td>流程演练项目，<b>流程重量是交付物</b></td></tr>
+    <tr><td>度量</td><td>无显式量化闭环</td><td>每切片 3 个数</td><td>复盘可量化，成本≈0</td></tr>
+  </table>
+  <div class="mark">本质分野：<b>Matt 的连续性在上下文窗口里，Demo 的连续性在仓库的产物与状态里</b>——拆开的主体靠文档与状态机重新粘合。</div>
+</div>
+
+<!-- 10 vs 海天 -->
+<div class="sec" id="haitian">
+  <h2><span class="n" style="background:var(--teal);">10</span>与海天 product-workflow-suite 对比</h2>
+  <div class="cap">海天方式：19 个 product-* 阶段 skill + 编排器，Codex 环境人触发命令约定；产物海天命名；状态机 Draft/Reviewed/Blocked/Not Applicable；run-mode 三级；两阶段 review + 对抗审查三轴；公共契约；双交付通道。</div>
+  <h3>相同点（我们借鉴了什么）</h3>
+  <table>
+    <tr><th style="width:32%;">海天概念</th><th style="width:30%;">Demo 对应</th><th>借鉴方式</th></tr>
+    <tr><td>产物命名（海天命名）</td><td>切片下 clarify.md / prd.md / technical-solution.md / development-plan.md / test-cases.md</td><td><b>全盘采用</b></td></tr>
+    <tr><td>状态机与取值</td><td>.workflow-state.json Draft/Reviewed/Blocked/Not Applicable + QA-*</td><td><b>全盘采用</b>，就近放每切片</td></tr>
+    <tr><td>run-mode 三级</td><td>需求分级 L/M/S 的验证侧口径</td><td>采用并与 L/M/S 映射</td></tr>
+    <tr><td>阶段门禁</td><td>适配清单 §4 门禁列</td><td>采用并加严</td></tr>
+    <tr><td>对抗审查三轴</td><td>§4.6 校验层三轴对抗（fresh 上下文）</td><td>采用，且用独立 bot 执行（更隔离）</td></tr>
+    <tr><td>lite 排除条件</td><td>S 级排除条件</td><td><b>逐条继承</b></td></tr>
+    <tr><td>wrap-up 判定</td><td>QA 环节 wrap-up 门禁</td><td>采用</td></tr>
+  </table>
+  <div class="mark">结论：<b>海天贡献了 Demo 的"骨架与命名"</b>——流水线阶段、产物命名、状态机、run-mode、门禁语义全部以海天为底，Demo 在其上加"SDD 门禁"与"多 agent 执行"。</div>
+  <h3>不同点</h3>
+  <table>
+    <tr><th style="width:16%;">维度</th><th style="width:26%;">海天</th><th style="width:30%;">Demo</th><th>不同为了什么</th></tr>
+    <tr><td>执行环境</td><td>Codex 环境，人触发命令约定</td><td>OpenMausBot，改为指挥官委派指令指名 skill + 产物标注</td><td>执行器不同；"人触发"内化为"指挥官触发"，触发留痕可审计</td></tr>
+    <tr><td>触发主体</td><td>用户直接点命令</td><td>指挥官按决策表委派</td><td>路由职责归指挥官，需求方仍只面对指挥官</td></tr>
+    <tr><td>审查执行者</td><td>同一 agent 内两阶段 review（自审链）</td><td>Demo-CodeReview 独立 bot fresh 上下文</td><td>把"自审"升级为"真独立审"，审查者不带方案上下文</td></tr>
+    <tr><td>状态机写入</td><td>各阶段 agent 写本阶段状态</td><td>Reviewed 唯一写入者 = 指挥官</td><td>人闸显式化，杜绝并发写冲突</td></tr>
+    <tr><td>流程长度</td><td>三段 run-mode</td><td>三档 L/M/S 分级 + run-mode 双轨映射</td><td>需求侧与验证侧分离：分级由指挥官判定、run-mode 记录验证口径</td></tr>
+    <tr><td>交付通道</td><td>git + 软件门户双通道</td><td>仅本地 git</td><td>Demo 无远程/门户，按需求方要求</td></tr>
+  </table>
+  <div class="mark">一句话：<b>门禁不变，组织变了</b>——海天的门禁语义完整保留，执行主体从"一个 agent 听人指挥"变成"一群 bot 听指挥官指挥"。</div>
+</div>
+
+<!-- 11 借鉴总结 -->
+<div class="sec" id="learn">
+  <h2><span class="n" style="background:var(--gold);">11</span>学习借鉴总结（重点）</h2>
+  <div class="duo">
+    <div class="card">
+      <h4><span class="badge b-skill">Matt</span>我们学到什么</h4>
+      <ul>
+        <li><b>方法论，不重造</b>：TDD 节奏、垂直切片、先红后修、对抗访谈、深模块词汇——30 个技能直接成为执行层主力</li>
+        <li><b>技能路由器思想</b>：ask-matt 让人导航技能；Demo 把导航职责内化为指挥官 + 决策表，路由由人点变成查表可得</li>
+        <li><b>HITL 的价值</b>：访谈/quiz/质询坚持"决策是用户的"，Demo 继承为 HITL 上抛契约——子 bot 不许替需求方拍板</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="badge b-teal">海天</span>我们学到什么</h4>
+      <ul>
+        <li><b>骨架与命名</b>：11 阶段流水线、海天命名产物、状态机、run-mode 三级、lite 排除条件——流程骨架直接以海天为底</li>
+        <li><b>门禁语义</b>：每阶段"过了才进下一步"、对抗审查三轴（自评不算过）、wrap-up 收尾——最值钱的部分，全盘继承并加严</li>
+        <li><b>裁剪哲学</b>：lite 判定条件逐条继承为 S 级排除条件——轻重是<b>有据的裁剪</b>，不是随意的偷懒</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mark" style="margin-top:12px;">💡 <b>为什么有不同点</b>：全部服务于同一个目标——"生产级机制完整性"裁定下，让多 bot 协作达到单 agent 时代无法达到的<b>隔离度与可审计性</b>。一句话：<b>Matt 给了我们"怎么把一件事做对"的方法，海天给了我们"一套完整流程长什么样"的骨架；我们把方法装进骨架，再按多 bot 协作与生产级可审计的目的改造执行层。</b></div>
+</div>
+
+<!-- 12 推广要点 -->
+<div class="sec" id="promo">
+  <h2><span class="n" style="background:var(--l);">12</span>推广要点（其他项目 / 其他部门）</h2>
+  <table>
+    <tr><th style="width:26%;">要点</th><th>内容</th></tr>
+    <tr><td>① 模板 + 实值两件套</td><td>demo-team.botmrr.md（通用核心 + 占位符）+ 适配清单（项目实值）——新项目复用 = 生成模板 + 填实值 + 设 cwd + 对技能映射 + 跑一个真实需求验证闭环</td></tr>
+    <tr><td>② 技能库随仓库走</td><td>cwd 直读 .agents/（Matt 公开技能可重新拉取；海天套件走内部渠道拷贝），不内联 OMB（超包上限且丢非 md 文件）</td></tr>
+    <tr><td>③ 四层分离路径约定</td><td>切片 / .scratch / 文档 / .agents 可直接复制；状态机就近放切片目录</td></tr>
+    <tr><td>④ 先对齐定位声明</td><td>接手新项目第一件事确认"流程重量算不算交付物"——Demo 因演练定位选了生产级重量；真实项目需按风险裁剪，<b>不能原样搬</b></td></tr>
+    <tr><td>⑤ 多 agent 协作三件套</td><td>委派指名留痕 / HITL 上抛 / 单写入者纪律——适合任何"多个 agent 同时操作同一仓库"的场景</td></tr>
+    <tr><td>⑥ 复盘四件套</td><td>总纲（方案是什么）→ 诊断记录（现状 vs 业界）→ 优化方案（决策与理由）→ 适配清单（落地细节）</td></tr>
+  </table>
+</div>
+
+<footer>Demo 团队 · 总纲依据《工作流方案总结与借鉴.md》（2026-09-12 定稿）· 关联：适配清单（机制单一事实源）/ 诊断 v1（现状基线）/ 优化方案 v2（决策）/ 研发流程总览.html（流程图 v3）</footer>
+</div>
+</body>
+</html>

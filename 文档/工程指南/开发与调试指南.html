@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 开发与调试指南 · 环境 / 构建 / 启动 / 调试 / 排障速查</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --l:#1d4ed8; --l-bg:#eff6ff; --m:#b45309; --m-bg:#fffbeb; --s:#15803d; --s-bg:#f0fdf4;
+    --gate:#dc2626; --gate-bg:#fef2f2; --gold:#a16207; --gold-bg:#fffbeb;
+    --skill:#7c3aed; --skill-bg:#f5f3ff; --skill-line:#ddd6fe; --teal:#0f766e; --teal-bg:#f0fdfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); font:14px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; padding:28px 18px 48px;}
+  .wrap{max-width:1120px; margin:0 auto;}
+  h1{font-size:21px; font-weight:800;}
+  .sub{color:var(--muted); font-size:13px; margin-top:5px;}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-top:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .sec h2{font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:3px;}
+  .sec h2 .n{display:inline-flex; align-items:center; justify-content:center; min-width:25px; height:25px; border-radius:8px; color:#fff; font-weight:800; font-size:12.5px; padding:0 7px;}
+  .sec .cap{color:var(--muted); font-size:12.5px; margin-bottom:11px;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
+  th{background:#f8fafc; font-size:12px; color:#374151;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9; border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:11.5px; color:#0f172a;}
+  .badge{display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .b-l{background:var(--l-bg); color:var(--l);} .b-m{background:var(--m-bg); color:var(--m);} .b-s{background:var(--s-bg); color:var(--s);}
+  .b-gate{background:var(--gate-bg); color:var(--gate);} .b-gold{background:var(--gold-bg); color:var(--gold);}
+  .b-skill{background:var(--skill-bg); color:var(--skill);} .b-teal{background:var(--teal-bg); color:var(--teal);}
+
+  /* 一键脚本卡片 */
+  .scripts{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+  .sc{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fafbfc; display:flex; gap:12px; align-items:flex-start;}
+  .sc .ic{flex:0 0 auto; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff;}
+  .sc .bd{flex:1;}
+  .sc h4{font-size:13px;}
+  .sc .d{font-size:11.5px; color:#374151; margin-top:3px;}
+  .sc .d code{font-size:10.5px;}
+
+  /* 命令块 */
+  .cmd{background:#0f172a; color:#cbd5e1; border-radius:10px; padding:13px 16px; font:12.5px/1.75 "Cascadia Code",Consolas,monospace; overflow-x:auto; margin:6px 0;}
+  .cmd .c{color:#64748b;} .cmd .p{color:#7dd3fc;} .cmd .ok{color:#86efac;} .cmd .w{color:#fbbf24;}
+
+  /* 排障表行高亮 */
+  tr.bad td:first-child{background:var(--gate-bg); color:var(--gate); font-weight:700;}
+
+  /* 凭据说明 */
+  .cred{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+  .credbox{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fafbfc;}
+  .credbox h4{font-size:12.5px; margin-bottom:5px; display:flex; align-items:center; gap:6px;}
+  .credbox p{font-size:12px; color:#374151; margin-bottom:4px;}
+  .credbox p b{color:var(--ink);}
+
+  .mark{border-radius:9px; padding:9px 13px; font-size:12.5px; margin-top:10px;}
+  .mark.r{background:var(--gate-bg); border:1px solid #fecaca;} .mark.r b{color:var(--gate);}
+  .mark.t{background:var(--teal-bg); border:1px solid #99f6e4;} .mark.t b{color:var(--teal);}
+
+  footer{margin-top:20px; color:var(--muted); font-size:11.5px; text-align:center;}
+  @media (max-width:800px){ .scripts{grid-template-columns:1fr;} .cred{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Demo 开发与调试指南</h1>
+  <div class="sub">项目级日常开发知识（环境 / 构建 / 启动 / 调试 / 排障），与具体需求无关。需求产物见 切片\&lt;需求短名&gt;\；从零搭建整套环境见《环境搭建配置指南》。最后修订：2026-09-12。</div>
+
+  <!-- 1 环境 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--l);">1</span>环境前置（一次性）</h2>
+    <table>
+      <tr><th style="width:26%;">组件</th><th style="width:34%;">版本</th><th>验证命令</th></tr>
+      <tr><td>Java</td><td>21 LTS（JDK）</td><td><code>java -version</code></td></tr>
+      <tr><td>Maven</td><td>3.9.x</td><td><code>mvn -version</code></td></tr>
+      <tr><td>Node.js / npm</td><td>22.x / 10.x</td><td><code>node -v; npm -v</code></td></tr>
+      <tr><td>PowerShell 7</td><td>最新（脚本用）</td><td><code>pwsh -v</code>（默认 C:\Program Files\PowerShell\7\pwsh.exe）</td></tr>
+      <tr><td>MySQL</td><td>8.0 本地实例，3306，库名 demo</td><td><code>Test-NetConnection localhost -Port 3306</code></td></tr>
+    </table>
+    <div class="cmd"><span class="c"># MySQL 建库（一般已建，后端 ddl-auto=update 自动建表）</span><br><span class="ok">CREATE DATABASE</span> IF NOT EXISTS demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</div>
+  </div>
+
+  <!-- 2 凭据 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--gold);">2</span>凭据机制（项目特色，务必了解）</h2>
+    <div class="cred">
+      <div class="credbox">
+        <h4><span class="badge b-gate">禁读边界</span>仓库根 .local-credentials.env</h4>
+        <p><b>禁读、禁提交</b>（gitignore），properties 格式两行：</p>
+        <div class="cmd" style="margin:0;">DB_USERNAME=你的用户名<br>DB_PASSWORD=你的密码</div>
+      </div>
+      <div class="credbox">
+        <h4><span class="badge b-teal">注入机制</span>application.yml</h4>
+        <p><code>spring.config.import: optional:file:../.local-credentials.env[.properties]</code></p>
+        <p>username/password 占位符<b>无默认值，缺失即 fail fast</b>（防止悄悄连错库）；自动化测试用 H2 内存库 + 环境变量 <code>DB_USERNAME</code>/<code>DB_PASSWORD</code> 覆盖，不依赖 MySQL。</p>
+      </div>
+    </div>
+    <div class="mark r">⚠️ <b>坑</b>：.env 不是 Spring 原生配置扩展名，config import 必须带 <code>[.properties]</code> 格式提示，否则 optional 会静默吞错、占位符原样传给 JDBC，表现就是启动报 <b>Access denied</b>。</div>
+  </div>
+
+  <!-- 3 一键脚本 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--s);">3</span>一键脚本（推荐，双击即可）</h2>
+    <div class="cap">根目录 4 个 bat（薄壳，内部调用 scripts\*.ps1，各开一个 PowerShell 7 窗口）。前后端两个窗口都要开着；顺序无所谓，vite 代理会在后端起来后自动生效。</div>
+    <div class="scripts">
+      <div class="sc"><div class="ic" style="background:var(--l);">B</div><div class="bd"><h4>构建Demo.bat</h4><div class="d">后端 <code>mvn package</code>（含全部测试）+ 前端 <code>npm run build</code>（含类型检查）→ <code>scripts\build-demo.ps1</code></div></div></div>
+      <div class="sc"><div class="ic" style="background:var(--s);">S</div><div class="bd"><h4>启动后端.bat</h4><div class="d"><code>mvn spring-boot:run</code>，端口 8080；自动检查 MySQL 3306 → <code>scripts\start-backend.ps1</code></div></div></div>
+      <div class="sc"><div class="ic" style="background:var(--skill);">F</div><div class="bd"><h4>启动前端3000端口.bat</h4><div class="d"><code>npm run dev</code>，端口 3000，/api 代理到 8080；缺 node_modules 自动 install → <code>scripts\start-frontend.ps1</code></div></div></div>
+      <div class="sc"><div class="ic" style="background:var(--teal);">V</div><div class="bd"><h4>验证Demo.bat</h4><div class="d">后端 20 测试 + 前端 typecheck + 运行中服务健康检查 → <code>scripts\verify-demo.ps1</code></div></div></div>
+    </div>
+  </div>
+
+  <!-- 4 手动构建+启动 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--teal);">4</span>手动构建与启动</h2>
+    <div class="cmd"><span class="c"># 后端（产物 target\ticket-system-backend-0.1.0-SNAPSHOT.jar，约 50 MB fat jar，含全部测试）</span><br><span class="p">cd E:\Demo\backend</span>; mvn package<br><span class="c"># 跳过测试（不推荐，构建脚本默认不跳）</span>：mvn package -DskipTests<br><br><span class="c"># 前端（vue-tsc -b 类型检查 + vite build → dist\，约 100 KB）</span><br><span class="p">cd E:\Demo\frontend</span>; npm install; npm run build<br><span class="c"># 仅类型检查</span>：npm run typecheck</div>
+    <div class="cmd"><span class="c"># 本地启动：后端（8080，连本地 MySQL demo 库，自动建表）</span><br><span class="p">cd E:\Demo\backend</span>; mvn spring-boot:run<br><br><span class="c"># 前端（新终端，3000，/api 自动代理到 8080）</span><br><span class="p">cd E:\Demo\frontend</span>; npm install; npm run dev</div>
+    <div class="mark t">🌐 浏览器打开 <code>http://localhost:3000</code> → 新建工单 → 点进详情 → 底部评论区发一条评论 → 应即时刷新显示。</div>
+  </div>
+
+  <!-- 5 调试 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--m);">5</span>调试</h2>
+    <table>
+      <tr><th style="width:18%;">端</th><th style="width:40%;">方式</th><th>要点</th></tr>
+      <tr><td>后端（Java）</td><td>IDE 断点：IntelliJ 打开 backend\ 运行主类并断点调试（最直观）<br>远程调试：命令行启动 + IDE attach 5005</td><td><code>mvn spring-boot:run "-Dspring-boot.run.jvmArguments=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"</code>；日志实时输出在启动窗口</td></tr>
+      <tr><td>后端 API 冒烟</td><td>curl 健康检查（口径与冒烟计划 S1 一致）</td><td><code>curl -i http://localhost:8080/api/tickets</code> 期望 200 + 工单数组；POST 冒烟工单：<code>curl -i -X POST http://localhost:8080/api/tickets -H "Content-Type: application/json" -d '{"title":"冒烟工单"}'</code>（title 必填，字段以 prd/实体为准）</td></tr>
+      <tr><td>前端（Vue 3 + Vite）</td><td>HMR 热更新，改代码即时生效</td><td>类型检查 <code>npm run typecheck</code>（构建/CI 前置门禁）；看 /api 请求是否代理成功（F12 → Network → 过滤 api）；若 502/504 多半是后端 8080 没起来</td></tr>
+      <tr><td>前端组件调试</td><td>浏览器 Vue DevTools 扩展</td><td>查组件树 / 状态 / Pinia（若引入）</td></tr>
+    </table>
+  </div>
+
+  <!-- 6 验证命令 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--skill);">6</span>验证命令（对应各角色职责）</h2>
+    <div class="cmd"><span class="p">cd E:\Demo\backend</span>; mvn test      <span class="c"># 后端 20 个测试（状态机单元 + MockMvc 集成含评论链路，H2 内存库）</span><br><span class="p">cd E:\Demo\frontend</span>; npm run build  <span class="c"># 前端 typecheck + 构建</span><br>curl -i http://localhost:8080/api/tickets  <span class="c"># 运行中健康检查（200）</span></div>
+  </div>
+
+  <!-- 7 排障 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--gate);">7</span>排障速查表</h2>
+    <table>
+      <tr><th style="width:36%;">症状</th><th style="width:32%;">原因</th><th>处理</th></tr>
+      <tr class="bad"><td>后端启动即失败，日志 Access denied</td><td>.local-credentials.env 凭据缺失/格式错，或 config import 丢了 [.properties]</td><td>检查文件两行 DB_USERNAME=/DB_PASSWORD=（properties 格式，等号两侧无空格）；确认 import 写法见 §2</td></tr>
+      <tr class="bad"><td>后端失败，日志 Unknown database 'demo'</td><td>demo 库未建</td><td>执行 §1 建库语句后重启</td></tr>
+      <tr class="bad"><td>后端失败，连接超时</td><td>MySQL 未启动</td><td>启动 MySQL 服务；Test-NetConnection localhost -Port 3306 应 True</td></tr>
+      <tr><td>端口 8080 / 3000 被占</td><td>上次进程未退</td><td>netstat -ano | findstr :8080（或 3000）→ taskkill /PID &lt;pid&gt; /F</td></tr>
+      <tr><td>前端报 module not found</td><td>node_modules 缺失/过期</td><td>npm install（脚本已自动处理缺失）</td></tr>
+      <tr><td>前端页面 502/504</td><td>vite 代理目标（后端 8080）没起来</td><td>先启动后端；frontend\vite.config.ts proxy 指向 http://localhost:8080</td></tr>
+      <tr><td>改配置不生效</td><td>Spring 缓存了旧配置</td><td>重启后端进程（Ctrl+C 再 mvn spring-boot:run）</td></tr>
+    </table>
+  </div>
+
+  <!-- 8 文档体系 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--m);">8</span>文档体系一览（知识归属）</h2>
+    <table>
+      <tr><th style="width:30%;">文档</th><th style="width:20%;">归属</th><th>内容</th></tr>
+      <tr><td>开发与调试指南.html（本文件，原 md 内容已并入）</td><td>项目级日常知识</td><td>环境/构建/启动/调试/排障/脚本用法</td></tr>
+      <tr><td>环境搭建配置指南.md（工程指南\）</td><td>从零搭建</td><td>给"别人照着做"的整套环境搭建步骤</td></tr>
+      <tr><td>机制与方案\工作流方案总结与借鉴.md（总纲）</td><td>机制总览</td><td>多 Agent 团队方案全景（md 事实源）+ 流程图 + 演进可视化</td></tr>
+      <tr><td>协作机制\README.md（机制库索引）</td><td>流程规则（事实源）</td><td>角色↔skill 映射、需求分级、产物集、状态机约定、能力边界矩阵</td></tr>
+      <tr><td>协作机制\demo-team-section-context.md</td><td>分区公共规则</td><td>Section Context 粘贴用正文 + 留档（入口归一 + 四条铁律，已生效）</td></tr>
+      <tr><td>协作机制\10-优化方案决策.md / 11-度量台账.md</td><td>机制演进</td><td>优化决策单一事实源（v2/v2.2）/ 切片 metrics 聚合</td></tr>
+      <tr><td>OMB学习笔记\01–06</td><td>知识沉淀</td><td>机器人/委派/BotMRR/移植/公共规则/竞品对比（分享同事用）</td></tr>
+      <tr><td>切片\&lt;需求短名&gt;\</td><td>需求级</td><td>clarify / prd / development-plan / test-cases / build-verification / qa-verification / 状态机</td></tr>
+      <tr><td>.scratch\</td><td>纯过程区</td><td>日志/临时脚本/演练草稿（gitignore，整目录可随时删除）；验证证据转正落切片入库</td></tr>
+    </table>
+  </div>
+
+  <footer>Demo 团队 · Demo 开发与调试指南（2026-09-12，原《开发与调试指南.md》内容已并入本页）· 关联：环境搭建配置指南.html（从零搭建）/ ../机制与方案/适配清单可视化.html（适配清单）</footer>
+</div>
+</body>
+</html>

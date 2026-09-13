@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMB vs Rakazo 对比 · 2026-09-12</title>
+<style>
+  :root {
+    --paper: #faf8f5;
+    --ink: #1f2a37;
+    --muted: #6b7280;
+    --line: #e5e0d8;
+    --omb: #1f4e79;
+    --omb-soft: #e8f0f7;
+    --rak: #0e7a5f;
+    --rak-soft: #e6f4ee;
+    --amber: #b45309;
+    --amber-soft: #fdf3e3;
+    --card: #ffffff;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 1020px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 36px; }
+  header h1 { font-size: 26px; font-weight: 700; letter-spacing: .5px; }
+  header p { color: var(--muted); margin-top: 8px; font-size: 14px; }
+  .badges { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    font-size: 12px; padding: 4px 12px; border-radius: 999px;
+    background: #fff; border: 1px solid var(--line); color: var(--muted);
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 24px 26px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(31,42,55,.05);
+  }
+  .card h2 {
+    font-size: 17px; font-weight: 700; margin-bottom: 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card h2 .tag {
+    font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 6px;
+    background: var(--omb-soft); color: var(--omb); white-space: nowrap;
+  }
+  .card h2 .tag.rak { background: var(--rak-soft); color: var(--rak); }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+  h3 { font-size: 14px; margin: 18px 0 10px; color: var(--ink); }
+  h3:first-of-type { margin-top: 8px; }
+
+  /* vs 对比 */
+  .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; }
+  .vs-col { border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; background: #fff; }
+  .vs-col.omb { border-top: 3px solid var(--omb); }
+  .vs-col.rak { border-top: 3px solid var(--rak); }
+  .vs-col .name { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+  .vs-col.omb .name { color: var(--omb); }
+  .vs-col.rak .name { color: var(--rak); }
+  .vs-col .tagline { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .vs-mid { align-self: center; font-weight: 700; color: var(--line); font-size: 22px; }
+  .kv { font-size: 13px; }
+  .kv .row { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px dashed #f0ece5; }
+  .kv .row:last-child { border-bottom: none; }
+  .kv .k { flex: 0 0 88px; color: var(--muted); font-size: 12px; padding-top: 1px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0 4px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #f0ece5; vertical-align: top; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; background: #fbfaf8; }
+
+  .concl {
+    background: var(--amber-soft); border: 1px solid #f0d9b0; border-radius: 10px;
+    padding: 14px 16px; font-size: 13.5px; margin-top: 12px;
+  }
+  .concl b { color: var(--amber); }
+
+  ul.clean { margin: 6px 0 0 18px; font-size: 13.5px; }
+  ul.clean li { margin: 6px 0; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
+
+  @media (max-width: 720px) {
+    .vs { grid-template-columns: 1fr; }
+    .vs-mid { display: none; }
+    body { padding: 20px 10px 48px; }
+    .card { padding: 18px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>OMB vs Rakazo</h1>
+  <p>同一赛道的两个独立实现：理念与实现对比 —— 2026-09-12</p>
+  <div class="badges">
+    <span class="badge">结论经 GitHub 核实</span>
+    <span class="badge">OMB 本机在用</span>
+    <span class="badge">Rakazo v0.1.6 beta</span>
+  </div>
+</header>
+
+<div class="card">
+  <h2><span class="tag">核心结论</span>暂不装 Rakazo</h2>
+  <p class="sub">两个项目均为 2026-08 独立开源、Apache-2.0、互不为 fork（rakazo 吸收的 millson1 是瑞士 Millson，非 milind-soni）</p>
+
+  <div class="vs">
+    <div class="vs-col omb">
+      <div class="name">OpenMausBot</div>
+      <div class="tagline">"Your own team of AI bots, in a chat app"</div>
+      <div class="kv">
+        <div class="row"><span class="k">定位</span><span>本地桌面聊天应用为产品中心</span></div>
+        <div class="row"><span class="k">数据</span><span>本地优先，~/.openmausbot 文件，<b>无数据库</b></span></div>
+        <div class="row"><span class="k">模型</span><span>BYO 本机 CLI（复用 claude/codex/grok 登录）</span></div>
+        <div class="row"><span class="k">架构</span><span>React(:5199) + harness(:8799)，HTTP+SSE</span></div>
+        <div class="row"><span class="k">分发</span><span>mac / <b>Windows</b> / Ubuntu 安装包</span></div>
+        <div class="row"><span class="k">体量</span><span>1691 commits · 2.55k★ · 193 issues</span></div>
+      </div>
+    </div>
+    <div class="vs-mid">VS</div>
+    <div class="vs-col rak">
+      <div class="name">Rakazo</div>
+      <div class="tagline">"AI teammates you actually own"（VISION.md）</div>
+      <div class="kv">
+        <div class="row"><span class="k">定位</span><span>持久化 AI 队友平台，三端共用一 API</span></div>
+        <div class="row"><span class="k">数据</span><span>服务端优先：<b>Postgres + Prisma</b>，bots 常驻</span></div>
+        <div class="row"><span class="k">模型</span><span>BYO 凭据，经 Pi 网关，服务端持有</span></div>
+        <div class="row"><span class="k">架构</span><span>Postgres + Graphile Worker；web/Electron/Expo 瘦客户端</span></div>
+        <div class="row"><span class="k">分发</span><span>Docker Compose；桌面<b>只有 mac + Linux</b></span></div>
+        <div class="row"><span class="k">体量</span><span>828 commits · 2.33k★ · 9 issues</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Rakazo 独有卖点（OMB 没有）</h3>
+  <table>
+    <tr><th>能力</th><th>说明</th></tr>
+    <tr><td>语义记忆</td><td>Supermemory / Serenity（按 space 选择，带 SSRF 防护），OMB 为文件记忆</td></tr>
+    <tr><td>语音</td><td>4 种（ElevenLabs / OpenAI / Cartesia / Fish Audio），OMB 仅 ElevenLabs</td></tr>
+    <tr><td>Team Computer</td><td>共享浏览器身份；OMB 沙箱为 Box 云桌面 / 本地 VM / 宿主 CUA</td></tr>
+    <tr><td>工具源</td><td>Pipedream Connect + 自装 Treg + 远程 MCP + OpenAPI，比 OMB 的 Composio 更宽</td></tr>
+  </table>
+
+  <h3>关键事实</h3>
+  <ul class="clean">
+    <li><b>Windows 是分水岭：</b>OMB 有成熟 Windows 安装器（本机在用）；Rakazo v0.1.6 发布资产只有 mac dmg/zip + Linux AppImage，<b>无 .exe</b>。</li>
+    <li><b>本地体验：</b>OMB 装完即用；Rakazo 本地跑也要 Docker Engine + Postgres。</li>
+    <li><b>社区体量：</b>stars 接近，但 OMB 提交/issue 流量明显更大——迭代更快也更"吵"，Rakazo 更收敛。</li>
+  </ul>
+
+  <div class="concl">
+    <b>结论：暂不装。</b> Windows 桌面主力（Rakazo 无 Windows 桌面端，只能浏览器 + Docker/Postgres）+ OMB 已深度使用，迁移成本高收益低。
+    它的主场是 24h 服务器常驻 + 手机/网页随时访问（OMB <code>serve --tunnel</code> 也能做到）；最低成本尝鲜 = VPS 跑
+    <code>install-images.sh</code>，浏览器体验两天，与 OMB 互不冲突、随时可删。等 Rakazo 出 Windows 桌面版再重新评估。
+  </div>
+</div>
+
+<footer>整理自 2026-09-12 GitHub 核实（README / VISION.md / 提交历史 / 发布资产）· 笔记：06-竞品对比-OMB-vs-Rakazo.md</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo 工作流机制演进 · 诊断基线 v1 → 优化决策 v2</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --l:#1d4ed8; --l-bg:#eff6ff; --m:#b45309; --m-bg:#fffbeb; --s:#15803d; --s-bg:#f0fdf4;
+    --gate:#dc2626; --gate-bg:#fef2f2; --gold:#a16207; --gold-bg:#fffbeb;
+    --skill:#7c3aed; --skill-bg:#f5f3ff; --skill-line:#ddd6fe; --teal:#0f766e; --teal-bg:#f0fdfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); font:14px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; padding:28px 18px 48px;}
+  .wrap{max-width:1120px; margin:0 auto;}
+  h1{font-size:21px; font-weight:800;}
+  .sub{color:var(--muted); font-size:13px; margin-top:5px;}
+  .tabs{display:flex; gap:8px; margin:16px 0 2px; flex-wrap:wrap;}
+  .tab{display:inline-flex; align-items:center; gap:7px; border-radius:999px; padding:6px 15px; font-size:13px; font-weight:700; border:1px solid var(--line); background:#fff;}
+  .tab.v1{border-color:#94a3b8; color:#475569;} .tab.v2{border-color:#a7f3d0; color:var(--teal); background:var(--teal-bg);}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-top:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .sec h2{font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:3px;}
+  .sec h2 .n{display:inline-flex; align-items:center; justify-content:center; min-width:25px; height:25px; border-radius:8px; color:#fff; font-weight:800; font-size:12.5px; padding:0 7px;}
+  .sec .cap{color:var(--muted); font-size:12.5px; margin-bottom:11px;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
+  th{background:#f8fafc; font-size:12px; color:#374151;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9; border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:11.5px; color:#0f172a;}
+  .badge{display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .b-gate{background:var(--gate-bg); color:var(--gate);} .b-teal{background:var(--teal-bg); color:var(--teal);}
+  .b-gold{background:var(--gold-bg); color:var(--gold);} .b-skill{background:var(--skill-bg); color:var(--skill);}
+  .b-s{background:var(--s-bg); color:var(--s);} .b-m{background:var(--m-bg); color:var(--m);}
+  .card{border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fafbfc; margin-top:10px;}
+  .card h3{font-size:13px; margin-bottom:6px; display:flex; align-items:center; gap:7px;}
+  .card ul{list-style:none;}
+  .card li{font-size:12px; padding:3px 0 3px 14px; position:relative; color:#374151;}
+  .card li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .card li b{color:var(--ink);}
+  .mark{border-radius:9px; padding:9px 13px; font-size:12.5px; margin-top:10px;}
+  .mark.v1{background:#f8fafc; border:1px solid var(--line);}
+  .mark.v2{background:var(--teal-bg); border:1px solid #99f6e4;}
+  .mark b{color:var(--teal);}
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:13px;}
+  .diff-flow{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0;}
+  .flow-step{border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:11.8px; font-weight:600; background:#fafbfc;}
+  .flow-step.old{background:#fef2f2; border-color:#fecaca; color:var(--gate); text-decoration:line-through;}
+  .flow-step.new{background:var(--teal-bg); border-color:#99f6e4; color:var(--teal);}
+  .ar{color:var(--muted); font-weight:800;}
+  .ver-timeline{display:flex; gap:0; margin-top:8px; flex-wrap:wrap;}
+  .ver{flex:1; min-width:230px; border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fafbfc; position:relative; margin-right:22px;}
+  .ver:not(:last-child)::after{content:"→"; position:absolute; right:-18px; top:50%; transform:translateY(-50%); color:var(--muted); font-weight:800;}
+  .ver h4{font-size:13px; display:flex; align-items:center; gap:6px;}
+  .ver .d{font-size:11.5px; color:var(--muted); margin:4px 0 6px;}
+  .ver ul{list-style:none;}
+  .ver li{font-size:11.8px; padding:2.5px 0 2.5px 13px; position:relative; color:#374151;}
+  .ver li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  footer{margin-top:20px; color:var(--muted); font-size:11.5px; text-align:center;}
+  @media (max-width:800px){ .duo{grid-template-columns:1fr;} .ver{margin-right:0; margin-bottom:12px;} .ver:not(:last-child)::after{content:"";} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Demo 工作流机制演进 · 诊断基线 v1 → 优化决策 v2</h1>
+  <div class="sub">《工作流最佳实践诊断.md》（v1 现状基线，保持原样）+《协作机制/10-优化方案决策.md》（v2 决策单一事实源）合并对照版 —— 复盘时一次看全"现状 vs 优化后"。</div>
+  <div class="tabs">
+    <span class="tab v1">🩺 v1 诊断基线（2026-09-12）</span>
+    <span class="tab v2">🧭 v2 优化决策（需求方逐条确认）</span>
+  </div>
+
+  <!-- v1 全景 -->
+  <div class="sec">
+    <h2><span class="n" style="background:#64748b;">1</span>v1 现状机制全景（简述）</h2>
+    <div class="cap">对照对象：RFC 驱动开发（Uber/Stripe）、Google Engineering Practices、Kent Beck TDD、ThoughtWorks 技术雷达、DORA 四指标、four-eyes 评审、vertical slicing / tracer bullet、CD4P、risk-based tailoring（CMMI）。诚实边界：结构对比，非量化测量。</div>
+    <div class="diff-flow">
+      <span class="flow-step">澄清</span><span class="ar">→</span>
+      <span class="flow-step">规格</span><span class="ar">→</span>
+      <span class="flow-step">计划</span><span class="ar">→</span>
+      <span class="flow-step">对抗审查</span><span class="ar">→</span>
+      <span class="flow-step">Reviewed</span><span class="ar">→</span>
+      <span class="flow-step">TDD 实现</span><span class="ar">→</span>
+      <span class="flow-step">代码审查</span><span class="ar">→</span>
+      <span class="flow-step">构建验证</span><span class="ar">→</span>
+      <span class="flow-step">QA</span><span class="ar">→</span>
+      <span class="flow-step">测试环境部署</span>
+    </div>
+    <div class="card">
+      <h3>机制四支柱</h3>
+      <ul>
+        <li><b>流程</b>：澄清 → 规格 → 计划 → 对抗审查 → Reviewed → TDD → 代码审查 → 构建验证 → QA → 部署</li>
+        <li><b>分级</b>：L/M/S（§4.5）——分级是流程选择、不是门禁豁免</li>
+        <li><b>路由</b>：场景 → skill → 角色决策表（§3.1）</li>
+        <li><b>约束链</b>：规则查表 → 契约留痕 → 校验独立 → 门禁人闸（§4.6）</li>
+        <li><b>交付物</b>：切片/&lt;短名&gt;/ 下 clarify.md / prd.md / technical-solution.md / development-plan.md / test-cases.md / deployment-process.md + .workflow-state.json</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- v1 更严项 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--gate);">2</span>比业界主流更严的 6 项（现状 · 保留待确认）</h2>
+    <div class="cap">这些<b>不是缺陷</b>，是演练项目的有意重量；v2 最终全部保留。</div>
+    <table>
+      <tr><th style="width:6%;">#</th><th style="width:26%;">机制</th><th style="width:22%;">主流对应</th><th>更严在哪</th></tr>
+      <tr><td>1</td><td>对抗审查（fresh 上下文，三轴）</td><td>four-eyes 独立评审</td><td>fresh 上下文彻底隔离调用方判断，多数团队评审带上下文</td></tr>
+      <tr><td>2</td><td>QA 独立门禁，S 级不豁免</td><td>DoD + 独立 QA</td><td>S 级快速验证仍保留 QA 判定</td></tr>
+      <tr><td>3</td><td>状态机不可跳步</td><td>流程门禁</td><td>主流倾向最轻流程，我们显式锁步</td></tr>
+      <tr><td>4</td><td>TDD 强制</td><td>Kent Beck TDD（业界实际采纳率低）</td><td>主流多数为 test-after</td></tr>
+      <tr><td>5</td><td>Reviewed 唯一写入者</td><td>避免并发写冲突</td><td>单写入者约束显式化</td></tr>
+      <tr><td>6</td><td>部署默认 dry-run + runbook</td><td>CD4P 变更管理</td><td>保守侧：无 runbook 不部署</td></tr>
+    </table>
+  </div>
+
+  <!-- v1 缺漏项 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--m);">3</span>缺漏项 4 条（可改进 · v2 讨论对象）</h2>
+    <table>
+      <tr><th style="width:5%;">#</th><th style="width:22%;">缺漏</th><th style="width:22%;">主流实践</th><th style="width:24%;">影响</th><th>可选改进方向</th></tr>
+      <tr><td>1</td><td><b>度量闭环缺失（最大）</b></td><td>DORA 四指标</td><td>只有定性对账，无量化数据闭环</td><td>轻量度量表：每切片记录周期/缺陷数/QA 结果</td></tr>
+      <tr><td>2</td><td>CI 自动化未定义</td><td>push 即 CI</td><td>构建验证靠 bot 手动触发</td><td>定义 CI 等价门禁</td></tr>
+      <tr><td>3</td><td>分支/PR 策略未定义</td><td>trunk-based + 短命分支 + PR</td><td>直接 commit 主分支</td><td>显式声明为有意选择，或引入分支</td></tr>
+      <tr><td>4</td><td>测试覆盖率门禁未定义</td><td>按模块 80% 或风险分级</td><td>TDD 有、阈值无</td><td>定义覆盖率阈值策略（按风险分级）</td></tr>
+    </table>
+    <div class="mark v1">⚠️ <b>张力点</b>：流程重量 vs 主流"最轻流程"。Demo 是流程演练项目，<b>流程重量本身就是交付物</b>；若迁移真实生产项目需按风险裁剪、不能原样搬——v2 保持并显式声明此立场。</div>
+  </div>
+
+  <!-- v2 决策 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--teal);">4</span>v2 决策（六项 + v2.2 决策 8，2026-09-12 需求方逐条确认）</h2>
+    <div class="cap">总基调：Demo 需求与功能是演示级，但<b>工作流、skills、交付物、agent 协作均为生产级要求</b>；优化目标是"生产级机制的完整性"，不是"放松流程"。</div>
+    <table>
+      <tr><th style="width:5%;">#</th><th style="width:18%;">议题</th><th style="width:40%;">决策</th><th style="width:12%;">类型</th><th>一句话理由</th></tr>
+      <tr><td>1</td><td>度量闭环（缺漏 1）</td><td><b>补</b>：每切片 .workflow-state.json 记 3 个数——澄清→Reviewed 前置时间 / 实现→QA 缺陷返工数 / QA 一次通过</td><td><span class="badge b-s">新增机制</span></td><td>撑起对账闭环的量化部分，成本≈0，不硬套 DORA</td></tr>
+      <tr><td>2</td><td>CI（缺漏 2）</td><td><b>正名</b>：构建验证 = "CI 等价门禁"，Reviewed 后、QA 前固定闸</td><td><span class="badge b-skill">正名现有</span></td><td>机制已被状态机锁死，只差显式命名</td></tr>
+      <tr><td>3</td><td>分支/PR（缺漏 3）</td><td><b>显式声明为有意选择</b>，不引入；多人协作时重开决策</td><td><span class="badge b-m">决策记录</span></td><td>单人单机 + 流程内双审查已是替代品</td></tr>
+      <tr><td>4</td><td>覆盖率（缺漏 4）</td><td><b>补</b>：核心业务模块 ≥80%，工具/脚本/演示页不设阈值</td><td><span class="badge b-s">新增机制</span></td><td>TDD 管"有测试"，阈值管"测到关键处"</td></tr>
+      <tr><td>5</td><td>TDD 在 S 级</td><td><b>保持强制，不开口子</b></td><td><span class="badge b-gold">裁定确认</span></td><td>需求方裁定：需要严谨测试就不该归 S 级</td></tr>
+      <tr><td>6</td><td>更严项 6 条</td><td><b>全部保留，不动</b></td><td><span class="badge b-gold">裁定确认</span></td><td>生产级裁定下流程重量是交付物</td></tr>
+      <tr><td>7</td><td>能力边界 + 多入口趋同（v2.2 决策 8）</td><td><b>补</b>：适配清单 §8 角色能力与权限边界矩阵（G1–G8 + 8 角色×可写范围×绝对禁做 + 裁决优先级）；Section Context 公共规则落地生效（用户已粘贴）+ 各 SOUL 入口归一条款（双保险）</td><td><span class="badge b-s">新增机制</span></td><td>边界集中可审计；任意角色单独使用时行为与全组一致</td></tr>
+    </table>
+    <div class="mark v2">🗣️ <b>S 级 TDD 裁定原文（需求方）</b>："S 级别的 tdd 就足够了，不用那么测试；如果需要比较严谨的测试，就不应该归类为 S 级。" 推论：<b>分级本身承担风险裁剪</b>——需严谨测试的需求按定义归 M/L，而不是在 S 级放松测试要求。</div>
+  </div>
+
+  <!-- 版本对照 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--l);">5</span>版本对照与落地状态</h2>
+    <div class="cap">两份源文档分工：本页 v1 部分保持原样（现状基线），v2 决策以《协作机制/10-优化方案决策.md》为单一事实源；对照 = "现状 vs 优化后"。</div>
+    <div class="ver-timeline">
+      <div class="ver">
+        <h4><span class="badge b-gate">v1</span>《工作流最佳实践诊断.md》</h4>
+        <div class="d">2026-09-12 · 现状基线，保持原样</div>
+        <ul>
+          <li>判定口径 + 现状全景</li>
+          <li>更严项 6 条（§四）</li>
+          <li>缺漏项 4 条（§五）</li>
+          <li>张力点（§六）</li>
+          <li>第八节 = v2 结论摘要 + 指针</li>
+        </ul>
+      </div>
+      <div class="ver">
+        <h4><span class="badge b-teal">v2</span>《协作机制/10-优化方案决策.md》</h4>
+        <div class="d">2026-09-12 · 决策单一事实源（v2 六项 + v2.2 决策 8）</div>
+        <ul>
+          <li>决策总览 6 项（v2）</li>
+          <li>决策 8（v2.2）：能力边界文档化 + Section Context 公共规则落地</li>
+          <li>逐项：决策 / 理由 / 落地位置</li>
+          <li>落地清单（全部 ✅ 随本轮提交）</li>
+          <li>迁移真实项目裁剪声明</li>
+        </ul>
+      </div>
+      <div class="ver">
+        <h4><span class="badge b-skill">v3</span>流程图 研发流程总览.html</h4>
+        <div class="d">已按 v2 结论更新</div>
+        <ul>
+          <li>新增 §5 优化版 v3（6 项决策表）</li>
+          <li>S lane：TDD 强制 + 升 M/L 虚线规则</li>
+          <li>L lane：构建验证正名"CI 等价门禁"</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mark v2">📦 <b>落地状态</b>：适配清单原则 7–11（度量 metrics / CI 等价门禁 / 覆盖率分级 / 分支决策记录 / S 级 TDD 裁定）+ 构建行标注 + 措辞修正，已随 commit 落地（2026-09-12）；流程图 v3 同步更新。<b>v2.2（决策 8）</b>：适配清单 §8 权限矩阵 + Section Context 公共规则生效 + OMB 学习笔记 05，已随 commit 5c5e182 落地（仅文档区，2026-09-12 晚）。</div>
+  </div>
+
+  <footer>Demo 团队 · 依据《工作流最佳实践诊断.md》v1 +《协作机制/10-优化方案决策.md》v2（2026-09-12）· 关联：工作流方案总结与借鉴.html（总纲）/ 适配清单可视化.html（适配清单）</footer>
+</div>
+</body>
+</html>

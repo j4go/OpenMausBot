@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 研发环境搭建配置指南 · OMB 团队 + 项目技能库 + 项目规范 三层架构</title>
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+    --l:#1d4ed8; --l-bg:#eff6ff; --m:#b45309; --m-bg:#fffbeb; --s:#15803d; --s-bg:#f0fdf4;
+    --gate:#dc2626; --gate-bg:#fef2f2; --gold:#a16207; --gold-bg:#fffbeb;
+    --skill:#7c3aed; --skill-bg:#f5f3ff; --skill-line:#ddd6fe; --teal:#0f766e; --teal-bg:#f0fdfa;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); font:14px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; padding:28px 18px 48px;}
+  .wrap{max-width:1180px; margin:0 auto;}
+  h1{font-size:21px; font-weight:800;}
+  .sub{color:var(--muted); font-size:13px; margin-top:5px;}
+  .sec{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin-top:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .sec h2{font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:3px;}
+  .sec h2 .n{display:inline-flex; align-items:center; justify-content:center; min-width:25px; height:25px; border-radius:8px; color:#fff; font-weight:800; font-size:12.5px; padding:0 7px;}
+  .sec .cap{color:var(--muted); font-size:12.5px; margin-bottom:11px;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top;}
+  th{background:#f8fafc; font-size:12px; color:#374151;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  code{background:#f1f5f9; border:1px solid var(--line); border-radius:5px; padding:0 5px; font-size:11.5px; color:#0f172a;}
+  .badge{display:inline-block; border-radius:999px; padding:2px 9px; font-size:11px; font-weight:700; white-space:nowrap;}
+  .b-l{background:var(--l-bg); color:var(--l);} .b-m{background:var(--m-bg); color:var(--m);} .b-s{background:var(--s-bg); color:var(--s);}
+  .b-gate{background:var(--gate-bg); color:var(--gate);} .b-gold{background:var(--gold-bg); color:var(--gold);}
+  .b-skill{background:var(--skill-bg); color:var(--skill);} .b-teal{background:var(--teal-bg); color:var(--teal);}
+
+  /* 三层架构 */
+  .tiers{display:flex; flex-direction:column; gap:12px; margin-top:4px;}
+  .tier{border-radius:11px; padding:13px 16px; border:1px solid var(--line); background:#fafbfc; display:flex; gap:16px; align-items:flex-start;}
+  .tier .lv{flex:0 0 auto; width:34px; height:34px; border-radius:9px; color:#fff; font-weight:800; font-size:16px; display:flex; align-items:center; justify-content:center;}
+  .tier.t1 .lv{background:var(--skill);} .tier.t2 .lv{background:var(--l);} .tier.t3 .lv{background:var(--teal);}
+  .tier .bd{flex:1;}
+  .tier h4{font-size:13.5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .tier .d{font-size:12px; color:#374151; margin-top:4px;}
+  .tier .d b{color:var(--ink);}
+
+  /* 目录树 */
+  .tree{background:#0f172a; color:#cbd5e1; border-radius:10px; padding:14px 16px; font:12.5px/1.7 "Cascadia Code",Consolas,monospace; overflow-x:auto;}
+  .tree .cm{color:#64748b;}
+  .tree .hl{color:#7dd3fc;} .tree .ok{color:#86efac;}
+
+  /* 步骤时间线 */
+  .steps{counter-reset:step; display:flex; flex-direction:column; gap:8px;}
+  .step{display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line); border-radius:10px; padding:10px 13px; background:#fafbfc;}
+  .step .no{counter-increment:step; flex:0 0 auto; width:26px; height:26px; border-radius:8px; background:var(--teal); color:#fff; font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .step .bd{flex:1;}
+  .step .bd h4{font-size:13px; display:flex; align-items:center; gap:7px; flex-wrap:wrap;}
+  .step .bd .d{font-size:12px; color:#374151; margin-top:3px;}
+  .step .bd .d code{font-size:11px;}
+
+  /* 角色 */
+  .roles{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  .role{border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fafbfc;}
+  .role .nm{font-weight:800; font-size:12px;}
+  .role .tt{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  /* 三层分离 */
+  .split{display:grid; grid-template-columns:1fr 1fr 1fr; gap:11px; margin-top:4px;}
+  .part{border-radius:10px; padding:12px 13px; border:1px solid var(--line);}
+  .part .pct{font-size:18px; font-weight:800;}
+  .part h4{font-size:12.5px; margin:3px 0 5px;}
+  .part ul{list-style:none;}
+  .part li{font-size:11.5px; padding:2.5px 0 2.5px 13px; position:relative; color:#374151;}
+  .part li::before{content:"▸"; position:absolute; left:0; color:#9ca3af;}
+  .part.a{background:var(--s-bg); border-color:#bbf7d0;} .part.a .pct{color:var(--s);}
+  .part.b{background:var(--m-bg); border-color:#fde68a;} .part.b .pct{color:var(--m);}
+  .part.c{background:var(--gate-bg); border-color:#fecaca;} .part.c .pct{color:var(--gate);}
+
+  /* BotMRR 结构 */
+  .bmrr{background:#f8fafc; border:1px solid var(--line); border-radius:10px; padding:13px 16px; font:12px/1.7 "Cascadia Code",Consolas,monospace; overflow-x:auto; color:#334155;}
+  .bmrr .y{color:#b45309;} .bmrr .b{color:#1d4ed8;} .bmrr .g{color:#15803d;} .bmrr .cm{color:#94a3b8;}
+
+  .mark{border-radius:9px; padding:9px 13px; font-size:12.5px; margin-top:10px;}
+  .mark.g{background:var(--gold-bg); border:1px solid #fde68a;} .mark.g b{color:var(--gold);}
+  .mark.r{background:var(--gate-bg); border:1px solid #fecaca;} .mark.r b{color:var(--gate);}
+  .mark.t{background:var(--teal-bg); border:1px solid #99f6e4;} .mark.t b{color:var(--teal);}
+
+  footer{margin-top:20px; color:var(--muted); font-size:11.5px; text-align:center;}
+  @media (max-width:960px){ .roles{grid-template-columns:repeat(2,1fr);} .split{grid-template-columns:1fr;} }
+  @media (max-width:600px){ .roles{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Agent 研发环境搭建配置指南</h1>
+  <div class="sub">以 Demo 团队（E:\Demo）为落地实例，完整记录「OMB 团队角色 + 项目技能库 + 项目规范」三层研发环境的搭建方法。目标读者：想搭建属于自己 agent 开发环境的同事——按第 6 章从零搭建步骤操作即可复刻。</div>
+
+  <!-- 1 三层架构 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--skill);">1</span>这套环境的整体架构：三层组成</h2>
+    <div class="cap">团队定义与项目解耦——真正指向项目的只有每个 bot 的 cwd 指针。</div>
+    <div class="tiers">
+      <div class="tier t1">
+        <div class="lv">①</div>
+        <div class="bd">
+          <h4>团队角色层（OMB） <span class="badge b-skill">8 个 bot</span></h4>
+          <div class="d">指挥官 / Spec / Tickets / Implement / CodeReview / Build / QA / Deploy——定义存全局（bots.json + SOUL.md），<b>换项目只改 cwd 指针</b>。</div>
+        </div>
+      </div>
+      <div class="tier t2">
+        <div class="lv">②</div>
+        <div class="bd">
+          <h4>项目技能库层（.agents/，随仓库版本化） <span class="badge b-l">49 个 skill</span></h4>
+          <div class="d">skills/ = Matt 工程 skills（30 个）· product-workflow-suite/ = 海天产品工作流套件（19 个）。<b>角色 cwd 指向项目后直接读取，无需导入 OMB</b>。</div>
+        </div>
+      </div>
+      <div class="tier t3">
+        <div class="lv">③</div>
+        <div class="bd">
+          <h4>项目规范层（仓库内文档）</h4>
+          <div class="d">AGENTS.md（项目级工作约定）· 协作机制/（机制事实源，原适配清单 09-13 迁入）· 文档/机制与方案/（团队机制方案沉淀）· 文档/团队模板/（botmrr 模板 + 自检脚本）· 切片/（需求产物，海天命名）· .scratch/（纯过程区，整目录可随时删除）。</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <table>
+        <tr><th style="width:8%;">#</th><th style="width:24%;">核心设计思想</th><th style="width:38%;">落地方式</th><th>好处</th></tr>
+        <tr><td>1</td><td><b>团队定义与项目解耦</b></td><td>角色 SOUL 提炼成"通用核心 + 占位符"，机器路径/项目规范外置到适配清单</td><td>换项目不用重建 8 个 agent，几分钟导入副本即用</td></tr>
+        <tr><td>2</td><td><b>技能 cwd 直读而非导入</b></td><td>bot 的 working folder 指到项目目录，其文件工具直接读 .agents/</td><td>49 个 skill 超团队包 20 个上限；套件含非 md 资源，内联会破坏</td></tr>
+        <tr><td>3</td><td><b>产物命名用海天，门禁用 SDD</b></td><td>切片产物 clarify.md / prd.md / …（海天），状态机 Draft → Reviewed → QA-*（SDD）</td><td>两套流程同构（Draft/Reviewed/Blocked/Not Applicable），不打架</td></tr>
+      </table>
+    </div>
+    <h3 style="font-size:13px; margin:12px 0 6px;">目录结构总览（Demo 实值）</h3>
+    <div class="tree">
+E:\Demo\<br>
+├── .agents\                       <span class="cm"># ② 项目技能库（用户提供，勿动）</span><br>
+│   ├── skills\                    <span class="cm">#   Matt 工程 skills（30 个）</span><br>
+│   └── product-workflow-suite\    <span class="cm">#   海天产品工作流套件（19 个 product-* + 编排器）</span><br>
+├── .scratch\                      <span class="cm"># 纯过程区：issue tracker/日志/草稿（整目录可随时删除）</span><br>
+├── 切片\&lt;需求短名&gt;\                <span class="cm"># 需求产物目录（海天命名）</span><br>
+├── 文档\                          <span class="cm"># 机制文档 + 学习笔记</span><br>
+├── backend\                      <span class="cm"># 演示项目后端：Java 21 + Spring Boot 3.3.5</span><br>
+├── frontend\                     <span class="cm"># 演示项目前端：Vue 3 + Vite + TS</span><br>
+├── AGENTS.md                     <span class="cm"># 项目级规范（角色都要先读）</span><br>
+└── README.md                     <span class="cm"># 工作区说明 + 三步落地</span>
+    </div>
+  </div>
+
+  <!-- 2 SDD 流程与状态机 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--gate);">2</span>SDD 流程链 · 状态机 · 门禁</h2>
+    <div class="cap">两道最贵的闸：Reviewed 人批（只能指挥官写）、QA 判定（QA-Pending → QA-Passed / QA-Blocked）。</div>
+    <table>
+      <tr><th style="width:18%;">SDD 阶段</th><th style="width:24%;">海天阶段/产物</th><th style="width:22%;">状态机取值</th><th>门禁</th></tr>
+      <tr><td>需求澄清</td><td>clarify.md</td><td>Draft</td><td>澄清完整才能进规格</td></tr>
+      <tr><td>规格</td><td>prd.md（可选 prototype.html）</td><td>Draft</td><td>三轴对抗审查通过</td></tr>
+      <tr><td><b>Reviewed（人批）</b></td><td>—</td><td><span class="badge b-gold">Reviewed（只能指挥官写）</span></td><td><b>人批准</b></td></tr>
+      <tr><td>任务计划</td><td>technical-solution.md、development-plan.md</td><td>Draft</td><td>计划含验证命令与写入范围</td></tr>
+      <tr><td>TDD 实现</td><td>代码 + 单测</td><td>Draft/Blocked</td><td>测试真绿才报完成</td></tr>
+      <tr><td>代码审查</td><td>代码 diff</td><td>Draft</td><td>静态双轴审查</td></tr>
+      <tr><td>构建与验证</td><td>构建产物 + 健康检查</td><td>Draft</td><td><span class="badge b-l">CI 等价门禁</span>真实 PASS 输出</td></tr>
+      <tr><td>QA 验证</td><td>test-cases.md、wrap-up</td><td><span class="badge b-gate">QA-Pending → Passed / Blocked</span></td><td>Gate Function</td></tr>
+      <tr><td>测试环境部署</td><td>部署 + 冒烟</td><td>—</td><td>dry-run + 双重批准</td></tr>
+    </table>
+    <div class="mark r" style="margin-top:10px;">⛔ <b>需求分级 L / M / S 降级排除条件</b>：涉及新权限模型 / 敏感数据 / schema 迁移 / 跨仓契约 / 架构边界时必须走 L 或 M；fog（不确定高）时不降级。分级写入 .workflow-state.json 的 run_mode（lite / stage-gated / through-run）。</div>
+  </div>
+
+  <!-- 3 技能库 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--l);">3</span>项目技能库：为什么 cwd 直读而不是导入 OMB</h2>
+    <div class="cap">skill 进入 OMB 有三条通道（源码核实）；Demo 的 49 个 skills 超 20 上限，且海天套件依赖非 md 资源（scripts/ 等），不能内联。</div>
+    <table>
+      <tr><th style="width:18%;">通道</th><th style="width:34%;">机制</th><th style="width:26%;">上限/限制</th><th>适用</th></tr>
+      <tr><td>团队包内联</td><td>BotMRR package.skills.entries（完整 SKILL.md 文本）</td><td><b>≤20 个/包</b>；每 ≤256KB；source 拒绝绝对路径；导入后默认 disabled</td><td>少量开箱即用纪律 skill</td></tr>
+      <tr><td>GitHub 导入</td><td>bot 设置页 Import，只接受 owner/repo、github.com URL、raw SKILL.md</td><td>每包 ≤30；仅 markdown</td><td>从公开仓库按需拉取</td></tr>
+      <tr><td>skill_manage 创建</td><td>指挥官工具 → 用户批准卡</td><td>—</td><td>沉淀 OMB 级通用纪律</td></tr>
+    </table>
+    <div class="mark t" style="margin-top:10px;">✅ <b>决策</b>：项目技能库随仓库走，角色 cwd 指向项目后直接读取；模板 SOUL 只写"技能取用规则 + 映射表位置"，不内联 skills。<b>移植建议</b>：新项目直接复用 .agents/ 结构（Matt 公开技能可重新拉取；海天套件走内部渠道拷贝）。</div>
+  </div>
+
+  <!-- 4 角色与 SOUL -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--teal);">4</span>OMB 团队角色配置：8 角色 + SOUL 编写要点</h2>
+    <div class="roles">
+      <div class="role"><div class="nm">指挥官 commander</div><div class="tt">全流程协调；Reviewed 唯一写入者；批准与交付门禁</div></div>
+      <div class="role"><div class="nm">产品经理Spec spec</div><div class="tt">澄清→规格产物（clarify.md / prd.md），验收标准明确</div></div>
+      <div class="role"><div class="nm">技术经理Tickets tickets</div><div class="tt">任务拆解（development-plan.md）；缺陷 triage 分级闭环</div></div>
+      <div class="role"><div class="nm">开发工程师Implement implement</div><div class="tt">单任务 TDD（RED-GREEN-REFACTOR），如实报告</div></div>
+      <div class="role"><div class="nm">代码审查CodeReview codereview</div><div class="tt">人批前 fresh 对抗审查（三轴）+ 实现后静态双轴审查，只读</div></div>
+      <div class="role"><div class="nm">本地构建Build build</div><div class="tt">起栈、构建、健康检查，QA 前置</div></div>
+      <div class="role"><div class="nm">QA验证 qa</div><div class="tt">计划层判定 + wrap-up 门禁（Gate Function），只读</div></div>
+      <div class="role"><div class="nm">测试服部署Deploy deploy</div><div class="tt">打包、传输、deploy 与冒烟；默认 dry-run，双重批准</div></div>
+    </div>
+    <h3 style="font-size:13px; margin:13px 0 6px;">SOUL 编写要点（一份合格的角色 SOUL 含 6 个固定板块）</h3>
+    <table>
+      <tr><th style="width:16%;">板块</th><th>内容</th></tr>
+      <tr><td>① 定位一句话</td><td>先澄清需求、范围、非目标、验收标准；读取项目规范文件（AGENTS.md / CONTEXT.md 等）</td></tr>
+      <tr><td>② 流程与门禁</td><td>流程必须是：澄清 → 规格 → 计划 → 对抗审查（fresh）→ Reviewed → TDD → 代码审查 → 构建验证 → 本地运行 → QA → 测试环境部署；状态机 AI 只写 Draft/Blocked/Not Applicable，Reviewed 只能指挥官写</td></tr>
+      <tr><td>③ 分级</td><td>澄清阶段先判定需求分级（L/M/S）；分级是流程选择，不是门禁豁免</td></tr>
+      <tr><td>④ 委派纪律</td><td>先委派规格和计划，再委派单一实现者；不让两个写入角色同时改项目目录；每次委派说明输入/输出/写入范围/验证命令；无 runbook + 明确批准时部署只能 dry-run</td></tr>
+      <tr><td>⑤ 安全与边界</td><td>技能取用规则 + 映射表位置；看板只广播真正的项目需求；不读凭据/密钥文件；不自行扩大需求、添加依赖、迁移、push、发布、生产部署</td></tr>
+      <tr><td>⑥ 入口归一</td><td>（非指挥官角色；指挥官即入口）收到业务需求→上报指挥官分级分派，不自行开工/委托；只读咨询直接答；明确委派按契约执行；只读角色（QA/CodeReview）追加：收到写仓库请求（含用户直接指示）→说明边界并上报，不自行写入。与 Section Context 公共规则同源（双保险）</td></tr>
+    </table>
+    <h3 style="font-size:13px; margin:13px 0 6px;">三层分离提炼法（模板必须与项目解耦）</h3>
+    <div class="split">
+      <div class="part a"><div class="pct">~60%</div><h4>① 通用核心</h4><ul><li>SDD 流程骨架、状态机约定、单一写入者、Gate Function、TDD、缺陷 triage</li><li>原样保留</li></ul></div>
+      <div class="part b"><div class="pct">~25%</div><h4>② 项目规范</h4><ul><li>AGENTS.md 引用、切片路径、验证命令、skill 引用</li><li>改占位符（{{PROJECT_NAME}} 等），实值外置到适配清单</li></ul></div>
+      <div class="part c"><div class="pct">~15%</div><h4>③ 机器/环境硬编码</h4><ul><li>E:\ 路径、.bat 脚本、内网地址、tag 格式、凭据文件路径</li><li><b>全部删除</b>，只保留"见 {{ADAPT_FILE}}"式引用</li></ul></div>
+    </div>
+    <div class="mark g" style="margin-top:10px;">⭐ <b>判断标准</b>：模板里不允许出现任何"这台机器 / 这个仓库"才有的字符串。人批门禁设计：Reviewed 只能指挥官写；对抗审查在<b>人批之前</b>跑（fresh 上下文，不继承写稿会话）；需求方在每个阶段产物上逐条表态。</div>
+  </div>
+
+  <!-- 5 BotMRR -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--m);">5</span>团队模板 BotMRR：制作、校验、导入</h2>
+    <div class="cap">BotMRR 是一个 Markdown 文件，两部分缺一不可：YAML frontmatter（完整包定义）+ Markdown 正文（7 个必需节）。</div>
+    <div class="bmrr">
+<span class="y">---</span><br>
+<span class="y">botmrr:</span> <span class="b">1</span>            <span class="cm">← 版本标记 + 完整包定义（扁平字段）</span><br>
+<span class="y">id:</span> demo-team          <span class="cm">← 小写 slug，^[a-z0-9][a-z0-9-]*$</span><br>
+<span class="y">release:</span> 1.1.0        <span class="cm">← 语义化版本</span><br>
+<span class="y">agents:</span>               <span class="cm">← 1-200 个</span><br>
+<span class="y">  - key:</span> commander     <span class="cm">← key 规则 ^[a-z0-9][a-z0-9_-]*$</span><br>
+<span class="y">    soul:</span> |            <span class="cm">← 块标量，≤24000 字节（SOUL 全文，提炼版）</span><br>
+<span class="y">chiefOfStaff:</span> commander  <span class="cm">← 必须是某 agent 的 key</span><br>
+<span class="y">rooms:</span>                <span class="cm">← 可选，最多 30（demo-status-board 看板）</span><br>
+<span class="y">routines:</span>              <span class="cm">← 可选（error-log-watch 巡检示例）</span><br>
+<span class="y">---</span><br>
+<span class="g"># Demo 团队</span>           <span class="cm">← 正文必须含 7 个节（缺一不可）：</span><br>
+<span class="g">## Activation / ## Mission / ## Outcomes / ## Connections / ## Team / ## Chief of Staff / ## Completion rule</span>
+    </div>
+    <div class="mark r" style="margin-top:10px;">🔒 <b>校验与安全</b>：正文缺 7 必需节报 "missing its X section"；key 唯一且匹配正则；引用完整性（chiefOfStaff / room 成员 / routine agent 必须存在）；权限字段被剥离（approvalMode、autoApprove 等防 privilege smuggling）；cwd / 记忆 / 凭据 / 模型选择一律不过包边界。自检脚本：_validate_botmrr.py。<br><b>导入三步</b>：Import / From a folder（项目模式）→ 按适配清单填占位符 + 逐角色设 cwd 和模型 → 开工。版本前提：项目模式需 OMB ≥ 2026-08-21（PR #316）。</div>
+    <div class="mark t" style="margin-top:8px;">⚠️ <b>版本坑（踩过）</b>：新版 OMB 没有"导出团队"按钮（旧版 Export all bots 已移除，服务端 package-export.ts 有能力但无 UI）→ 制作模板 = 手工编写 BotMRR Markdown；<b>备份 ≠ 移植</b>（.ombbackup 是加密整工作区快照，含对话/凭据，恢复覆盖）；导入副本是干净的（无记忆/历史/授权，需重设 cwd 和模型）。</div>
+  </div>
+
+  <!-- 6 从零搭建 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--s);">6</span>从零搭建：8 步操作指南（给别人照着做）</h2>
+    <div class="cap">每步给出"做什么 + 可复制的骨架"，Demo 实值作示例。</div>
+    <div class="steps">
+      <div class="step"><div class="no">0</div><div class="bd"><h4>前置检查</h4><div class="d"><code>git --version</code> · <code>java -version</code>（Java 21）· <code>mvn -version</code>（3.9+）· <code>node -v; npm -v</code>（Node 18+）· 可选 MySQL 8.0（自动化测试用 H2 内存库，不依赖 MySQL）</div></div></div>
+      <div class="step"><div class="no">1</div><div class="bd"><h4>初始化仓库结构</h4><div class="d"><code>git init</code> + 建目录：.agents/skills、.agents/product-workflow-suite、协作机制、文档/机制与方案、文档/团队模板、文档/工程指南、文档/OMB学习笔记、切片、.scratch、backend、frontend</div></div></div>
+      <div class="step"><div class="no">2</div><div class="bd"><h4>写 AGENTS.md（项目级规范）</h4><div class="d">填：项目定位、流程纪律（SDD 链 + 状态机 + 产物命名）、构建验证命令、领域规则、安全边界。<b>这是所有角色行为的锚点</b></div></div></div>
+      <div class="step"><div class="no">3</div><div class="bd"><h4>放置技能库</h4><div class="d">Matt skills 从公开仓库拉取 / 拷贝 .agents/skills/；海天套件走内部渠道拷贝；确认每目录含 SKILL.md，套件内 AGENTS.md / CONTEXT.md / workflow-manifest.json 保持完整</div></div></div>
+      <div class="step"><div class="no">4</div><div class="bd"><h4>写 SOUL → 提炼模板 → 校验</h4><div class="d">按 6 板块写 SOUL（定位 / 流程门禁 / 分级 / 委派纪律 / 安全边界 / 入口归一）→ 三层分离提炼 → 组装 BotMRR（frontmatter + 7 必需节）→ 用自检脚本验证通过 → 写协作机制/README.md（原适配清单）</div></div></div>
+      <div class="step"><div class="no">5</div><div class="bd"><h4>导入 OMB 团队</h4><div class="d">桌面端 Teams → Import / From a folder → 逐角色设 cwd 与模型 → 按协作机制/README.md 填占位符 → 检查 routine 默认 paused</div></div></div>
+      <div class="step"><div class="no">5.1</div><div class="bd"><h4>配置分区公共规则（Section Context，趋同双保险之一）</h4><div class="d">桌面应用左侧边栏「团队地图」→ 分区卡片右上角 Context 按钮 → 粘贴公共规则正文（留档 协作机制/demo-team-section-context.md 的「==== 粘贴区 ====」之间内容）→ Save。<b>只有用户能写</b>（agent 禁写）。即使不配置，各角色 SOUL 已内置【⑥ 入口归一】——双保险删一仍留一</div></div></div>
+      <div class="step"><div class="no">6</div><div class="bd"><h4>搭种子项目（可选）</h4><div class="d">任何能构建的最小项目即可（Demo 用工单系统：backend Java 21 + Spring Boot + H2 测试 + MySQL 本地；frontend Vue 3 + Vite + TS）</div></div></div>
+      <div class="step"><div class="no">7</div><div class="bd"><h4>验证闭环</h4><div class="d">跑一个真实需求（建议 M 级）走完整流水线；对照 .workflow-state.json 确认状态流转；闭环后把沉淀固化回适配清单/模板</div></div></div>
+    </div>
+  </div>
+
+  <!-- 7 安全 -->
+  <div class="sec">
+    <h2><span class="n" style="background:var(--gate);">7</span>安全与凭据边界 · 踩坑清单</h2>
+    <div class="cap">/.local-credentials.env 为禁读边界（所有角色不得打开/读取/搜索/索引/摘要，只允许元数据检查）；凭据外置注入（application.yml config import optional:file:...env[.properties]，占位符无默认值、缺失即 fail fast）；部署默认 dry-run（不索要/保存/输出密码、不用 sshpass、双重批准）。</div>
+    <table>
+      <tr><th style="width:5%;">#</th><th style="width:42%;">坑</th><th>解法</th></tr>
+      <tr><td>1</td><td>.env 扩展名不被 Spring 识别，optional import 静默吞错</td><td><code>import: optional:file:...env[.properties]</code> 显式格式提示；占位符无默认值 → fail fast</td></tr>
+      <tr><td>2</td><td>新版 OMB 找不到"导出团队"按钮</td><td>没有 UI；用手工 BotMRR Markdown 或 API；.ombbackup 是备份不是模板</td></tr>
+      <tr><td>3</td><td>团队包不携带 cwd / 模型 / 记忆 / 凭据</td><td>导入后逐角色重设 cwd 与模型（特性：模板纯净）</td></tr>
+      <tr><td>4</td><td>团队包 skills ≤ 20 个、只带 markdown</td><td>项目技能库走 cwd 直读，不内联</td></tr>
+      <tr><td>5</td><td>项目模式导入需要 OMB ≥ 2026-08-21（PR #316）</td><td>看 UI 有没有 From a folder tab</td></tr>
+      <tr><td>6</td><td>routine 导入后处于启用状态的风险</td><td>BotMRR 强制 enabledAfterInstall: false，导入后一律 paused</td></tr>
+      <tr><td>7</td><td>角色自写 Reviewed 破坏门禁</td><td>SOUL 明示 Reviewed 只能指挥官写；AI 只写 Draft/Blocked/Not Applicable</td></tr>
+      <tr><td>8</td><td>对抗审查用写稿会话的上下文</td><td>CodeReview 必须以 fresh 上下文审查方案文档</td></tr>
+      <tr><td>9</td><td>把构建成功当测试成功 / 只看退出码</td><td>验证必须检查真实 PASS/FAIL 输出；QA Gate Function 只认本轮新鲜证据</td></tr>
+      <tr><td>10</td><td>看板刷屏</td><td>只广播真正的项目需求状态行；文档/对话/咨询型任务不推</td></tr>
+    </table>
+  </div>
+
+  <footer>Demo 团队 · 依据《环境搭建配置指南.md》（2026-09-12）· 关联：../OMB学习笔记/OMB学习笔记合集.html（OMB 机制科普）/ ../机制与方案/适配清单可视化.html（适配清单）</footer>
+</div>
+</body>
+</html>
