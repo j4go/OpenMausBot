@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Maple Mono NF CN 打头，原字体栈保留在第二位作为回退 */
+/* Prepend Maple Mono NF CN; original stacks stay as fallbacks */
 @theme {
   --font-mono: "Maple Mono NF CN", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
