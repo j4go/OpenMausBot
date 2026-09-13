@@ -44,3 +44,6 @@ deploy/podman/.env.*
 # 本地开发工具与数据（不进版本库）
 .tools/
 .omb-dev-data/
+
+# Windows 二开相关脚本/笔记全部本地化（含 electron 缓存副本 bat/electron-cache/）
+bat/
